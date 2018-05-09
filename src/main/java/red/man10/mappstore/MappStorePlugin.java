@@ -1,11 +1,13 @@
 package red.man10.mappstore;
 
 import net.minecraft.server.v1_12_R1.BlockPosition;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import red.man10.mappstore.apps.*;
+
+import java.util.List;
 
 public final class MappStorePlugin extends JavaPlugin  implements Listener {
 
@@ -20,10 +22,13 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         //    Initialize map system
         DynamicMapRenderer.setup(this);
 
+
         //////////////////////////////////////
         //      Regiser your mapp apps
-        DefaultMappApp.register();
+        ClockMappApp.register();
+        HelloMappApp.register();
         YourMappApp.register();
+        DrawMappApp.register();
 
 
         BlockPosition bp = new BlockPosition(0,0,0);
@@ -36,6 +41,13 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         ItemStack map = DynamicMapRenderer.getMapItem(this,mappName);
         if(map == null){
             p.sendMessage("§2[Error]No '"+mappName+"' map application.");
+
+            String appString = "loaded apps:";
+            List<String> apps = DynamicMapRenderer.getAppList();
+            for(String s : apps){
+                appString += "'"+s+"'";
+            }
+            p.sendMessage(apps.toString());
             return false;
         }
         p.getInventory().addItem(map);

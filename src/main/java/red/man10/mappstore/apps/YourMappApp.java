@@ -1,4 +1,7 @@
-package red.man10.mappstore;
+package red.man10.mappstore.apps;
+
+import red.man10.mappstore.DynamicMapRenderer;
+import red.man10.mappstore.MappApp;
 
 import java.awt.*;
 
@@ -7,23 +10,24 @@ import java.awt.*;
 //
 /////////////////////////////////////////////////////////
 
-public class YourMappApp {
+public class YourMappApp extends MappApp {
 
     ////////////////////////////////////////////
     //      App name (must be unique key)
     //      アプリ名：ユニークな必要があります
-    final  static String appName = "app1";
+    static String appName = "yourapp";
 
     ////////////////////////////////////////////
     //     Draw refresh Cycle:描画割り込み周期
     //     appTickCycle = 1 -> 1/20 sec
-    final static int  drawRefreshCycle = 20;
+    static int  drawRefreshCycle = 20;
 
 
     ///////////////////////////////////////////////////////
     //      Call this function to register your app
     //      アプリを登録するためにこの関数をコールしてください
-    static void register(){
+    static public void register(){
+
         /////////////////////////////////////////////////
         //      Button (nearby map) clicked event
         //      ボタン押された時の処理

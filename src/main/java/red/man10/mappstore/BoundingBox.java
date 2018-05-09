@@ -35,6 +35,7 @@ public class BoundingBox {
         BlockPosition pos = new BlockPosition(block.getX(), block.getY(), block.getZ());
         WorldServer world = ((CraftWorld) block.getWorld()).getHandle();
         AxisAlignedBB box = world.getType(pos).d(world, pos);
+
         min = new Vector(pos.getX() + box.a, pos.getY() + box.b, pos.getZ() + box.c);
         max = new Vector(pos.getX() + box.d, pos.getY() + box.e, pos.getZ() + box.f);
 

@@ -35,6 +35,7 @@ import static java.lang.Math.sqrt;
 import static org.bukkit.Bukkit.getServer;
 
 
+
 //////////////////////////////////////////////////////////
 //     DynamicMapRenderer
 //                             created by takatronix.com
@@ -175,7 +176,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     //      bukkitからrenderコールされた回数
     public int renderCount = 0;
     //      デバッグ表示フラグ
-    public boolean debugMode = true;
+    static public boolean debugMode = true;
 
 
     //////////////////////////////////////
@@ -269,14 +270,22 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
             //      叩いたブロック
             Block block = ent.getLocation().getBlock().getRelative(frame.getAttachedFace());
-            Bukkit.getLogger().info(block.toString());
+            //Bukkit.getLogger().info(block.toString());
             World world = e.getPlayer().getWorld();
 
             //      叩いたブロックのBB
             BoundingBox bb = new BoundingBox(block);
 
+
+            double rayDistance = 3;
+            double rayAccuracy = 0.01;
+
             //     視線からのベクトルを得る
             RayTrace rayTrace = new RayTrace(player.getEyeLocation().toVector(),player.getEyeLocation().getDirection());
+            //     ベクトル表示
+            if(debugMode){
+               // rayTrace.highlight(player.getWorld(),rayDistance,rayAccuracy);
+            }
 
             //      ディスプレイの　左上、右上をもとめる
             Vector topLeft = block.getLocation().toVector();
@@ -304,22 +313,24 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
             world.playEffect(bottomRight.toLocation(world), Effect.COLOURED_DUST,0);
 
             //      視線とブロックの交差点
-            Vector hit = rayTrace.positionOfIntersection(bb,3,0.01);
+            Vector hit = rayTrace.positionOfIntersection(bb,rayDistance,rayAccuracy);
             if(hit != null){
                 //      タッチした場所を光らす
-                world.playEffect(hit.toLocation(world), Effect.COLOURED_DUST,0);
+              //  world.playEffect(hit.toLocation(world), Effect.COLOURED_DUST,0);
 
                 double aDis = hit.distance(topLeft);
                 Vector left = topLeft.setY(hit.getY());
                 double xDis = hit.distance(left);
-                double dx = (double)128 * xDis;
-
                 double y = sqrt(aDis*aDis - xDis*xDis);
+                double dx = (double)128 * xDis;
                 double dy = (double)128 * y;
-
+              //  dx -= 4;
+              //  dy -= 4;
 
                 int px = (int)dx;
                 int py = (int)dy;
+
+                player.sendMessage(px+","+py);
 
                 //      タッチイベントを通知
                 DisplayTouchFunction func =  touchFunctions.get(key);
@@ -491,6 +502,11 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
     }
 
+    static public List<String>getAppList(){
+        List<String> list = new ArrayList<>(drawFunctions.keySet());
+       return list;
+    }
+
     //////////////////////////////////////////
     /// 　   描画用マップを取得する
     ///     key : 描画を切り替えるためのキー
@@ -498,6 +514,8 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
 
        if(drawFunctions.get(key) == null){
+
+
            return null;
        }
 
