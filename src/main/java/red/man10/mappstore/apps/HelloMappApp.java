@@ -1,7 +1,8 @@
-package red.man10.mappstore;
+package red.man10.mappstore.apps;
 
 import org.bukkit.Bukkit;
-
+import red.man10.mappstore.DynamicMapRenderer;
+import red.man10.mappstore.MappApp;
 import java.awt.*;
 
 
@@ -9,34 +10,28 @@ import java.awt.*;
 //          Hello map app example
 /////////////////////////////////////////////////////////
 
-public class DefaultMappApp {
+public class HelloMappApp extends MappApp {
 
+    ////////////////////////////////////////////
+    //      App name (must be unique key)
+    //      アプリ名：ユニークな必要があります
+    final  static String appName = "hello";
+
+    ////////////////////////////////////////////
+    //     Draw refresh Cycle:描画割り込み周期
+    //     appTickCycle = 1 -> 1/20 sec
+    final static int  drawRefreshCycle = 20;
 
     static int clickedCount;
 
-    static void register(){
+    static public void register(){
 
 
-        Bukkit.getLogger().info("reg");
         /////////////////////////////////////////////////
         //      Button (nearby map) clicked event
         //      ボタン押された時の処理
-        DynamicMapRenderer.registerButtonEvent("hello", (String key, int mapId) -> {
+        DynamicMapRenderer.registerButtonEvent(appName, (String key, int mapId) -> {
             clickedCount++;
-
-
-            //////////////////////////////////////////////
-            //  Get Graphics context for drawing
-            //  描画用コンテキスト取得
-            Graphics2D g = DynamicMapRenderer.getGraphics(mapId);
-            if(g == null){
-                return false;
-            }
-
-            //     　
-            g.setColor(Color.BLACK);
-            g.fillRect(0,0,128,128);
-
             //    true -> updateView:描画更新
             return true;
         });
@@ -44,7 +39,7 @@ public class DefaultMappApp {
         /////////////////////////////////////////////////
         //      Button (nearby map) clicked event
         //      ボタン押された時の処理
-        DynamicMapRenderer.registerDisplayTouchEvent("hello", (String key, int mapId,int x,int y) -> {
+        DynamicMapRenderer.registerDisplayTouchEvent(appName, (String key, int mapId,int x,int y) -> {
 
             //////////////////////////////////////////////
             //  Get Graphics context for drawing
@@ -63,12 +58,12 @@ public class DefaultMappApp {
 
         /////////////////////////////////////////////////
         //      rendering logic 描画ロジックをここに書く
-        DynamicMapRenderer.register( "hello", 0, (String key, int mapId,Graphics2D g) -> {
-           // g.setColor(Color.BLACK);
-           // g.fillRect(0,0,128,128);
+        DynamicMapRenderer.register( appName, 0, (String key, int mapId,Graphics2D g) -> {
+            g.setColor(Color.BLACK);
+            g.fillRect(0,0,128,128);
             g.setColor(Color.RED);
             g.setFont(new Font( "SansSerif", Font.BOLD ,10));
-            g.drawString("Hello:",10,70);
+            g.drawString("Hello:"+clickedCount,4,70);
             return true;
         });
 
