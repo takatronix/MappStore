@@ -6,14 +6,15 @@ import red.man10.mappstore.MappApp;
 import java.awt.*;
 
 /////////////////////////////////////////////////////////
-//          Mapp App default template
-//
+//          mApp default template
+//     https://github.com/takatronix/MappStore
+//     Please give me pull request
 /////////////////////////////////////////////////////////
 
 public class YourMappApp extends MappApp {
 
     ////////////////////////////////////////////
-    //      App name (must be unique key)
+    //      App name (must be unique)
     //      アプリ名：ユニークな必要があります
     static String appName = "yourapp";
 
@@ -24,15 +25,14 @@ public class YourMappApp extends MappApp {
 
 
     ///////////////////////////////////////////////////////
-    //      Call this function to register your app
-    //      アプリを登録するためにこの関数をコールしてください
+    //    Call this function to register the your app
+    //    アプリを登録するためにこの関数をコールしてください
     static public void register(){
 
         /////////////////////////////////////////////////
         //      Button (nearby map) clicked event
         //      ボタン押された時の処理
         DynamicMapRenderer.registerButtonEvent(appName, (String key, int mapId) -> {
-
 
             //////////////////////////////////////////////
             //  Get Graphics context for drawing
@@ -42,7 +42,7 @@ public class YourMappApp extends MappApp {
                 return false;
             }
 
-            //   画面をけす     　
+            //  clear screen  　
             g.setColor(Color.BLACK);
             g.fillRect(0,0,128,128);
 
@@ -51,8 +51,8 @@ public class YourMappApp extends MappApp {
         });
 
         /////////////////////////////////////////////////
-        //      Button (nearby map) clicked event
-        //      ボタン押された時の処理
+        //      Display touch event
+        //      ディスプレイがタッチされた時の処理
         DynamicMapRenderer.registerDisplayTouchEvent(appName, (String key, int mapId,int x,int y) -> {
 
             //////////////////////////////////////////////
@@ -66,7 +66,7 @@ public class YourMappApp extends MappApp {
             gr.setColor(Color.RED);
             gr.drawLine(x,y,x,y);
 
-            //    true -> updateView:描画更新
+            //    true -> call drawing logic :描画更新
             return true;
         });
 
@@ -75,8 +75,10 @@ public class YourMappApp extends MappApp {
         //     drawing logic
         //     描画ロジックをここに書く
         DynamicMapRenderer.register( appName, drawRefreshCycle, (String key, int mapId,Graphics2D g) -> {
-//            g.setColor(Color.BLACK);
-//            g.fillRect(0,0,128,128);
+
+            //  Clear screen
+            //  g.setColor(Color.BLACK);
+            //  g.fillRect(0,0,128,128);
 
             g.setColor(Color.YELLOW);
             g.setFont(new Font( "SansSerif", Font.BOLD ,10));
