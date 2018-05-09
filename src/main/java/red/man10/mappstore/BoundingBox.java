@@ -2,6 +2,7 @@ package red.man10.mappstore;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.util.Vector;
 
 
@@ -41,18 +42,18 @@ public class BoundingBox {
 
     //gets min and max point of entity
     // only certain nms versions ****
-//    BoundingBox(Entity entity){
-//        AxisAlignedBB bb = ((CraftEntity) entity).getHandle().getBoundingBox();
-//        min = new Vector(bb.a,bb.b,bb.c);
-//        max = new Vector(bb.d,bb.e,bb.f);
-//    }
+       BoundingBox(Entity entity){
+      //  AxisAlignedBB bb = ((CraftEntity) entity).getHandle().getBoundingBox();
+      //  min = new Vector(bb.a,bb.b,bb.c);
+      //  max = new Vector(bb.d,bb.e,bb.f);
+    }
 
-    /*
+
     BoundingBox (AxisAlignedBB bb){
         min = new Vector(bb.a,bb.b,bb.c);
         max = new Vector(bb.d,bb.e,bb.f);
     }
-*/
+
     public Vector midPoint(){
         return max.clone().add(min).multiply(0.5);
     }

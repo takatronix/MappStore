@@ -54,7 +54,6 @@ public class DefaultMappApp {
                 return false;
             }
 
-            Bukkit.getLogger().info("ddddd"+x);
             gr.setColor(Color.RED);
             gr.drawLine(x,y,x,y);
 
