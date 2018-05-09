@@ -5,7 +5,7 @@ import red.man10.mappstore.MappApp;
 import java.awt.*;
 
 /////////////////////////////////////////////////////////
-//          Mapp App default template
+//          mApp default template
 //
 /////////////////////////////////////////////////////////
 
@@ -21,7 +21,7 @@ public class DrawMappApp extends MappApp {
 
 
     ///////////////////////////////////////////
-    //      App name (must be unique key)
+    //      App name (must be unique )
     //      アプリ名：ユニークな必要があります
     final  static String appName = "draw";
 

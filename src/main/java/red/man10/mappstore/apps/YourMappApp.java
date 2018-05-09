@@ -2,13 +2,13 @@ package red.man10.mappstore.apps;
 
 import red.man10.mappstore.DynamicMapRenderer;
 import red.man10.mappstore.MappApp;
-
 import java.awt.*;
 
 /////////////////////////////////////////////////////////
 //          mApp default template
-//     https://github.com/takatronix/MappStore
-//     Please give me pull request
+//
+//     https://github.com/takatronix/MappStore/
+//     Please give me pull request your mApp!
 /////////////////////////////////////////////////////////
 
 public class YourMappApp extends MappApp {

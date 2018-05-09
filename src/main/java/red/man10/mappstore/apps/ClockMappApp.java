@@ -14,7 +14,6 @@ import java.time.format.DateTimeFormatter;
 public class ClockMappApp extends MappApp {
 
 
-
     ///////////////////////////////////////////
     //      App name (must be unique key)
     //      アプリ名：ユニークな必要があります
@@ -35,24 +34,9 @@ public class ClockMappApp extends MappApp {
         //      ボタン押された時の処理
         DynamicMapRenderer.registerButtonEvent(appName, (String key, int mapId) -> {
 
-/*
-            //////////////////////////////////////////////
-            //  Get Graphics context for drawing
-            //  描画用コンテキスト取得
-            Graphics2D g = DynamicMapRenderer.getGraphics(mapId);
-            if(g == null){
-                return false;
-            }
-
-            //   画面をけす     　
-            g.setColor(Color.BLACK);
-            g.fillRect(0,0,128,128);
-*/
-
             //    true -> call drawing logic / trueで描画ロジックがコールされます
             return true;
         });
-
 
 
         /////////////////////////////////////////////////

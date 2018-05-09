@@ -22,16 +22,13 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         //    Initialize map system
         DynamicMapRenderer.setup(this);
 
-
         //////////////////////////////////////
-        //      Regiser your mapp apps
+        //      Register your mApp
         ClockMappApp.register();
         HelloMappApp.register();
         YourMappApp.register();
         DrawMappApp.register();
 
-
-        BlockPosition bp = new BlockPosition(0,0,0);
     }
 
 

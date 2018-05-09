@@ -36,9 +36,8 @@ public class HelloMappApp extends MappApp {
             return true;
         });
 
-        /////////////////////////////////////////////////
-        //      Button (nearby map) clicked event
-        //      ボタン押された時の処理
+        //////////////////////////////////////////////////
+        //      DisplayTouch Event
         DynamicMapRenderer.registerDisplayTouchEvent(appName, (String key, int mapId,int x,int y) -> {
 
             //////////////////////////////////////////////
