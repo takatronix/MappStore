@@ -77,13 +77,13 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     //      ボタンクリックイベント
     @FunctionalInterface
     public interface ButtonClickFunction{
-        boolean onButtonClicked(String key,int mapId);
+        boolean onButtonClicked(String key,int mapId,Player player);
     }
 
     //     画面タッチ
     @FunctionalInterface
     public interface DisplayTouchFunction{
-        boolean onDisplayTouch(String key,int mapId,int x,int y);
+        boolean onDisplayTouch(String key,int mapId,Player player,int x,int y);
     }
     @EventHandler
     public void onItemInteract(PlayerInteractEntityEvent event){
@@ -304,7 +304,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
                 //      タッチイベントを通知
                 DisplayTouchFunction func =  touchFunctions.get(key);
                 if(func != null){
-                    if(func.onDisplayTouch(key,mapId,px,py)){
+                    if(func.onDisplayTouch(key,mapId,player,px,py)){
                         refresh(key);
                     }
                 }
@@ -360,7 +360,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
                 ButtonClickFunction func = buttonFunctions.get(key);
                 if(func != null){
                     Bukkit.getLogger().info("ボタンが押された => map key = "+key);
-                    if(func.onButtonClicked(key,mapId)){
+                    if(func.onButtonClicked(key,mapId,e.getPlayer())){
                         refresh(key);
                     }
                 }

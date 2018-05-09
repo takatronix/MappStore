@@ -1,5 +1,6 @@
 package red.man10.mappstore.apps;
 
+import org.bukkit.entity.Player;
 import red.man10.mappstore.DynamicMapRenderer;
 import red.man10.mappstore.MappApp;
 import java.awt.*;
@@ -32,7 +33,7 @@ public class ClockMappApp extends MappApp {
         /////////////////////////////////////////////////
         //      Button (nearby map) clicked event
         //      ボタン押された時の処理
-        DynamicMapRenderer.registerButtonEvent(appName, (String key, int mapId) -> {
+        DynamicMapRenderer.registerButtonEvent(appName, (String key, int mapId,Player player) -> {
 
             //    true -> call drawing logic / trueで描画ロジックがコールされます
             return true;

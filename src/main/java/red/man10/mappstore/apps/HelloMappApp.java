@@ -1,6 +1,7 @@
 package red.man10.mappstore.apps;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import red.man10.mappstore.DynamicMapRenderer;
 import red.man10.mappstore.MappApp;
 import java.awt.*;
@@ -30,7 +31,7 @@ public class HelloMappApp extends MappApp {
         /////////////////////////////////////////////////
         //      Button (nearby map) clicked event
         //      ボタン押された時の処理
-        DynamicMapRenderer.registerButtonEvent(appName, (String key, int mapId) -> {
+        DynamicMapRenderer.registerButtonEvent(appName, (String key, int mapId,Player player) -> {
             clickedCount++;
             //    true -> updateView:描画更新
             return true;
@@ -38,7 +39,7 @@ public class HelloMappApp extends MappApp {
 
         //////////////////////////////////////////////////
         //      DisplayTouch Event
-        DynamicMapRenderer.registerDisplayTouchEvent(appName, (String key, int mapId,int x,int y) -> {
+        DynamicMapRenderer.registerDisplayTouchEvent(appName, (String key, int mapId,Player player,int x,int y) -> {
 
             //////////////////////////////////////////////
             //  Get Graphics context for drawing
