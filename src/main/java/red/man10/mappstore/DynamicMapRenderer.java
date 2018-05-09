@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import static java.lang.Math.sqrt;
 import static org.bukkit.Bukkit.getServer;
 
 
@@ -108,6 +109,12 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     public interface ButtonClickFunction{
         boolean onButtonClicked(String key,int mapId);
     }
+
+    //     画面タッチ
+    @FunctionalInterface
+    public interface DisplayTouchFunction{
+        boolean onDisplayTouch(String key,int mapId,int x,int y);
+    }
     @EventHandler
     public void onItemInteract(PlayerInteractEntityEvent event){
         //           回転抑制用
@@ -126,6 +133,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
     //
     static HashMap<String,ButtonClickFunction> buttonFunctions = new HashMap<String,ButtonClickFunction>();
+    static HashMap<String,DisplayTouchFunction> touchFunctions = new HashMap<String,DisplayTouchFunction>();
 
     //        描画検索用
     static ArrayList<DynamicMapRenderer> renderers = new ArrayList<DynamicMapRenderer>();
@@ -138,6 +146,11 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     //     ボタンクリックイベントを追加
     public static void registerButtonEvent(String key,ButtonClickFunction func){
         buttonFunctions.put(key,func);
+    }
+
+    //     タッチイベントを追加
+    public static void registerDisplayTouchEvent(String key,DisplayTouchFunction func){
+        touchFunctions.put(key,func);
     }
 
 
@@ -249,11 +262,13 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
             if(key == null){
                 return false;
             }
-
+            Player player = e.getPlayer();
 
             //      たたいたブロック面
             BlockFace face = frame.getAttachedFace();
-            Bukkit.getLogger().info(face.getModX()+":"+face.getModY()+":"+face.getModZ());
+            player.sendMessage("hit face:"+face.toString());
+
+
 
             //      叩いたブロック
             Block block = ent.getLocation().getBlock().getRelative(frame.getAttachedFace());
@@ -265,23 +280,89 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
 
 
-            Player player = e.getPlayer();
             player.sendMessage("testing hit");
 
             RayTrace rayTrace = new RayTrace(player.getEyeLocation().toVector(),player.getEyeLocation().getDirection());
 
            // ArrayList<Vector> positions = rayTrace.traverse(10,0.01);
 
+            player.sendMessage("block = "+block.getLocation().toString());
+            //      ディスプレイの　左上、右上をもとめる
+            Vector topLeft = block.getLocation().toVector();
+            Vector bottomRight = block.getLocation().toVector();
+            topLeft.setY(topLeft.getY() + 1);
+            if(face == BlockFace.WEST){
+                topLeft.setZ( topLeft.getZ() + 1);
+                topLeft.setX( topLeft.getX() + 1);
+                bottomRight.setX(bottomRight.getX() +1);
+            }
+            if(face == BlockFace.SOUTH){
+                topLeft.setX( topLeft.getX() + 1);
+            }
+            if(face == BlockFace.EAST){
+                bottomRight.setZ(bottomRight.getZ() +1);
+            }
+            if(face == BlockFace.NORTH){
+                bottomRight.setZ(bottomRight.getZ() +1);
+                bottomRight.setX(bottomRight.getX() +1);
+                topLeft.setZ( topLeft.getZ() + 1);
+            }
+
+
+            world.playEffect(topLeft.toLocation(world), Effect.COLOURED_DUST,0);
+            world.playEffect(bottomRight.toLocation(world), Effect.COLOURED_DUST,0);
+
+
             Vector hit = rayTrace.positionOfIntersection(bb,3,0.01);
             if(hit != null){
                 player.sendMessage("a hit!!:"+hit.toString());
                 world.playEffect(hit.toLocation(world), Effect.COLOURED_DUST,0);
+
+
+                double aDis = hit.distance(topLeft);
+                double bDis = hit.distance(bottomRight);
+
+
+                Vector left = topLeft.setY(hit.getY());
+                double xdis = hit.distance(left);
+                double dx = (double)128 * xdis;
+
+                double y = sqrt(aDis*aDis - xdis*xdis);
+                double dy = (double)128 * y;
+
+
+                int px = (int)dx;
+                int py = (int)dy;
+
+                //      ボタン用メソッドをコール
+                DisplayTouchFunction func =  touchFunctions.get(key);
+                if(func != null){
+                    Bukkit.getLogger().info("ボタンが押された => map key = "+key);
+                    if(func.onDisplayTouch(key,mapId,px,py)){
+                        //player.sendMessage("drawww+t"+px);
+                        refresh(key);
+                    }
+                }
+
+
             }
 
 
 
 
-         //   Vector hit = rayTrace.positionOfIntersection(player.getEyeLocation().toVector(),player.getEyeLocation().getDirection(),10,0.01);
+            int mx = face.getModX();
+            int my = face.getModY();
+            int mz = face.getModZ();
+
+
+
+
+
+
+
+
+
+            //   Vector hit = rayTrace.positionOfIntersection(player.getEyeLocation().toVector(),player.getEyeLocation().getDirection(),10,0.01);
 
           //  world.playEffect(hit.toLocation(world), Effect.COLOURED_DUST,0);
             player.sendMessage("aaa");
@@ -564,6 +645,14 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
         return ;
     }
 
+    static public Graphics2D getGraphics(int mapId){
+        for(DynamicMapRenderer renderer:renderers){
+            if(renderer.mapId == mapId){
+                return renderer.bufferedImage.createGraphics();
+            }
+        }
+        return null;
+    }
 
     //      イメージマップ　
     static HashMap<String,BufferedImage> imageMap =  new HashMap<String,BufferedImage>();
