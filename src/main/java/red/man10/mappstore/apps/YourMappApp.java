@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import red.man10.mappstore.DynamicMapRenderer;
 import red.man10.mappstore.MappApp;
 import java.awt.*;
+import java.util.HashMap;
 
 /////////////////////////////////////////////////////////
 //          mApp default template
@@ -12,7 +13,10 @@ import java.awt.*;
 //     Please give me pull request your mApp!
 /////////////////////////////////////////////////////////
 
+
+
 public class YourMappApp extends MappApp {
+
 
     ////////////////////////////////////////////
     //      App name (must be unique)
@@ -25,6 +29,17 @@ public class YourMappApp extends MappApp {
     static int  drawRefreshCycle = 20;
 
 
+    ////////////////////////////////
+    //     Data
+    ///////////////////////////////
+    static class MappData{
+        int         data;
+        //   Add your data here / マップごとに保存するデータはここに追加
+    }
+    static HashMap<Integer,MappData> hashMap = new  HashMap<Integer,MappData>();
+
+
+
     ///////////////////////////////////////////////////////
     //    Call this function to register the your app
     //    アプリを登録するためにこの関数をコールしてください
@@ -34,6 +49,24 @@ public class YourMappApp extends MappApp {
         //      Button (nearby map) clicked event
         //      ボタン押された時の処理
         DynamicMapRenderer.registerButtonEvent(appName, (String key, int mapId,Player player) -> {
+
+            /*
+            ///////////////////////////////////////////////////////////////
+            //      mapごとに別々のデータを表示したい場合は
+            //      mapIdをキーにハッシュマップにデータを読み込み・保存してください
+
+            /////////////////////////////////////////
+            //     load app data / mapIDをキーにをロードする　
+            MappData data = hashMap.get(mapId);
+            if(data == null){
+                data = new MappData();
+            }
+
+
+            /////////////////////////////////////
+            //    save app data
+            hashMap.put(mapId,data);
+            */
 
             //////////////////////////////////////////////
             //  Get Graphics context for drawing

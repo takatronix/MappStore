@@ -11,7 +11,20 @@ import java.awt.*;
 //          Hello map app example
 /////////////////////////////////////////////////////////
 
+
+
 public class HelloMappApp extends MappApp {
+
+    ////////////////////////////////
+    //     Data
+    ///////////////////////////////////
+    static class MappData{
+        int         data;
+
+        //   Add your data here
+        //   マップごとに保存するデータはここに追加
+    }
+
 
     ////////////////////////////////////////////
     //      App name (must be unique key)
