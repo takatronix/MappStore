@@ -1,0 +1,12 @@
+name: Mappstore
+version: ${project.version}
+main: red.man10.mappstore.MappStorePlugin
+prefix: MappStore
+authors: [takatronix]
+description: Minecraft Map App Store 
+website: http://man10.red
+commands:
+   mapp:
+      description: Man10 Minecraft App System
+      permission: red.man10.mappstore
+      permission-message: You don't have <permission>
