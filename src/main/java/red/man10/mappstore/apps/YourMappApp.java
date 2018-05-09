@@ -29,15 +29,29 @@ public class YourMappApp extends MappApp {
     static int  drawRefreshCycle = 20;
 
 
-    ////////////////////////////////
+    ///////////////////////////////
     //     Data
     ///////////////////////////////
     static class MappData{
         int         data;
         //   Add your data here / マップごとに保存するデータはここに追加
+
+
     }
     static HashMap<Integer,MappData> hashMap = new  HashMap<Integer,MappData>();
 
+    //      ユーザーデーター保存
+    static MappData  loadData(int mapId) {
+        MappData data = hashMap.get(mapId);
+        if(data == null){
+            data = new MappData();
+        }
+        return data;
+    }
+    //      ユーザーデータ読み込
+    static MappData saveData(int mapId,MappData data){
+        return hashMap.put(mapId,data);
+    }
 
 
     ///////////////////////////////////////////////////////
@@ -50,22 +64,15 @@ public class YourMappApp extends MappApp {
         //      ボタン押された時の処理
         DynamicMapRenderer.registerButtonEvent(appName, (String key, int mapId,Player player) -> {
 
-            /*
             ///////////////////////////////////////////////////////////////
             //      mapごとに別々のデータを表示したい場合は
             //      mapIdをキーにハッシュマップにデータを読み込み・保存してください
-
-            /////////////////////////////////////////
+            /*
             //     load app data / mapIDをキーにをロードする　
-            MappData data = hashMap.get(mapId);
-            if(data == null){
-                data = new MappData();
-            }
+            MappData data = loadData(mapId);
 
-
-            /////////////////////////////////////
             //    save app data
-            hashMap.put(mapId,data);
+            saveData(mapId,data);
             */
 
             //////////////////////////////////////////////
