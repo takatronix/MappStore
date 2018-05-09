@@ -34,11 +34,11 @@ import java.util.List;
 import static java.lang.Math.sqrt;
 import static org.bukkit.Bukkit.getServer;
 
-
-
 //////////////////////////////////////////////////////////
 //     DynamicMapRenderer
 //                             created by takatronix.com
+//
+//     https://github.com/takatronix/MappStore/
 //      MIT Licence
 //////////////////////////////////////////////////////////
 
@@ -52,37 +52,6 @@ import static org.bukkit.Bukkit.getServer;
 //      0000.png => key: "0000"
 //
 //      (2) onEnable()などで描画関数登録
-
-/*
-
-        /////////////////////////////////////////////////
-        //      マップの近くのボタンが押された時の処理
-        DynamicMapRenderer.registerButtonEvent("game", (String key, int mapId) -> {
-
-            //    true -> 描画更新
-            return true;
-        });
-
-        /////////////////////////////////////////////////
-        //      描画関数登録
-        DynamicMapRenderer.register( "game", 0, (String key,int mapId, Graphics2D g) -> {
-
-            //      背景を黒に
-            g.setColor(Color.BLACK);
-            g.fillRect(0,0,128,128);
-
-            //      イメージキーを指定する
-            //      pluginFolder/image/item0.png
-            String imageKey = "item0";
-
-            //      画像を描画
-            DynamicMapRenderer.drawImage(g,imageKey,15,25,80,80);
-            //      trueならMapへ転送する
-            return true;
-        });
-
- */
-
 
 
 public class DynamicMapRenderer extends MapRenderer implements Listener {
