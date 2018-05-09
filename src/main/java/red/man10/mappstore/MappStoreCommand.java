@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 public class MappStoreCommand implements CommandExecutor {
 
     final String adminPermision = "red.man10.mapp.admin";
+    final String getPermision = "red.man10.mapp.get";
+
     final String  permissionErrorString = "§4§lYou don't have permission.";
 
 
@@ -36,7 +38,7 @@ public class MappStoreCommand implements CommandExecutor {
         String command = args[0];
 
         if(command.equalsIgnoreCase("get")){
-            if(!p.hasPermission(adminPermision)){
+            if(!p.hasPermission(getPermision)){
                 p.sendMessage(permissionErrorString);
                 return false;
             }
@@ -45,7 +47,7 @@ public class MappStoreCommand implements CommandExecutor {
                 plugin.giveMap(p,args[1]);
                 return true;
             }
-            p.sendMessage("§e/mapp get [mappkey]");
+            p.sendMessage("§e/mapp get [mAppkey]");
             return false;
         }
 
