@@ -1,5 +1,7 @@
 package red.man10.mappstore;
+import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.util.Vector;
 
 
@@ -25,21 +27,17 @@ public class BoundingBox {
 //        max = new Vector((double) block.getX() + blockNative.C(), (double) block.getY() + blockNative.E(), (double) block.getZ() + blockNative.G());
 //    }
 
-    BoundingBox(Block block){
-
-    }
-
     //gets min and max point of block
     //  ** 1.10 **
-//    BoundingBox(Block block) {
-//        net.minecraft.server.v1_10_R1.BlockPosition bp = new net.minecraft.server.v1_10_R1.BlockPosition(block.getX(), block.getY(), block.getZ());
-//        net.minecraft.server.v1_10_R1.WorldServer world = ((org.bukkit.craftbukkit.v1_10_R1.CraftWorld) block.getWorld()).getHandle();
-//        net.minecraft.server.v1_10_R1.IBlockData blockData = (net.minecraft.server.v1_10_R1.IBlockData) (world.getType(bp);
-//        net.minecraft.server.v1_10_R1.Block blockNative = blockData.getBlock();
-//        net.minecraft.server.v1_10_R1.AxisAlignedBB aabb = blockNative.a(blockData, world, bp);
-//        min = new Vector(bb.a,bb.b,bb.c);
-//        max = new Vector(bb.d,bb.e,bb.f);
-//    }
+    BoundingBox(Block block) {
+
+        BlockPosition pos = new BlockPosition(block.getX(), block.getY(), block.getZ());
+        WorldServer world = ((CraftWorld) block.getWorld()).getHandle();
+        AxisAlignedBB box = world.getType(pos).d(world, pos);
+        min = new Vector(pos.getX() + box.a, pos.getY() + box.b, pos.getZ() + box.c);
+        max = new Vector(pos.getX() + box.d, pos.getY() + box.e, pos.getZ() + box.f);
+
+    }
 
     //gets min and max point of entity
     // only certain nms versions ****

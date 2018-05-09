@@ -250,7 +250,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
                 return false;
             }
 
-            /*
+
             //      たたいたブロック面
             BlockFace face = frame.getAttachedFace();
             Bukkit.getLogger().info(face.getModX()+":"+face.getModY()+":"+face.getModZ());
@@ -258,23 +258,34 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
             //      叩いたブロック
             Block block = ent.getLocation().getBlock().getRelative(frame.getAttachedFace());
             Bukkit.getLogger().info(block.toString());
-
             World world = e.getPlayer().getWorld();
 
-            Vector vec = block.getLocation().toVector();
+            //      叩いたブロックのBB
+            BoundingBox bb = new BoundingBox(block);
 
-            Vector pos1 = vec.add( new Vector(1,1,0));
-            world.playEffect(pos1.toLocation(world), Effect.COLOURED_DUST,0);
 
-            Vector pos2 = vec.add( new Vector(0,-1,1));
-            world.playEffect(pos2.toLocation(world), Effect.COLOURED_DUST,0);
 
             Player player = e.getPlayer();
+            player.sendMessage("testing hit");
 
             RayTrace rayTrace = new RayTrace(player.getEyeLocation().toVector(),player.getEyeLocation().getDirection());
 
+           // ArrayList<Vector> positions = rayTrace.traverse(10,0.01);
 
-*/
+            Vector hit = rayTrace.positionOfIntersection(bb,3,0.01);
+            if(hit != null){
+                player.sendMessage("a hit!!:"+hit.toString());
+                world.playEffect(hit.toLocation(world), Effect.COLOURED_DUST,0);
+            }
+
+
+
+
+         //   Vector hit = rayTrace.positionOfIntersection(player.getEyeLocation().toVector(),player.getEyeLocation().getDirection(),10,0.01);
+
+          //  world.playEffect(hit.toLocation(world), Effect.COLOURED_DUST,0);
+            player.sendMessage("aaa");
+
 
             //Vector hit = rayTrace.positionOfIntersection(pos1,pos2,10,0.01);
             //Bukkit.getLogger().info(hit.toString());
