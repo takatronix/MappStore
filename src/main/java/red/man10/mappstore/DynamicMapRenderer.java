@@ -13,6 +13,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.map.MapCanvas;
@@ -26,9 +28,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 
 import static java.lang.Math.sqrt;
@@ -80,6 +80,20 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
         boolean onButtonClicked(String key,int mapId,Player player);
     }
 
+    //      ジャンプイベント（プレイヤーがマップを持ってジャンプした)
+    @FunctionalInterface
+    public interface PlayerJumpFunction{
+        boolean onPlayerJumped(String key,int mapId,Player player);
+    }
+
+    //      スニークイベント（プレイヤーがマップを持ってジャンプした)
+    @FunctionalInterface
+    public interface PlayerSneakFunction{
+        boolean onPlayerSneaked(String key,int mapId,Player player,boolean isSneaking);
+    }
+
+
+
     //     画面タッチ
     @FunctionalInterface
     public interface DisplayTouchFunction{
@@ -96,6 +110,83 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
         //      イベントを通知してやる（ボタン検出用)
         DynamicMapRenderer.onPlayerInteractEvent(e);
     }
+    @EventHandler
+    public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
+
+        //      プレイヤーがマップを持っていなければ抜け　
+        Player player = e.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if(item.getType() != Material.MAP) {
+            return;
+        }
+
+        int mapID = (int)item.getDurability();
+
+
+
+        Boolean isSneaking = player.isSneaking();
+
+
+        String key = findKey(mapID);
+        if(key == null){
+            return;
+        }
+        PlayerSneakFunction func =  sneakFunctions.get(key);
+        if(func != null){
+            if(func.onPlayerSneaked(key,mapID,player,isSneaking)){
+                refresh(key);
+            }
+        }
+
+    }
+
+
+    static HashMap<Player,Vector> userVec = new HashMap<Player,Vector>();
+
+    @EventHandler    public void onMove(PlayerMoveEvent e) {
+
+        //      プレイヤーがマップを持っていなければ抜け　
+        Player player = e.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if(item.getType() != Material.MAP) {
+            return;
+        }
+
+        int mapID = (int)item.getDurability();
+
+
+        Vector lastVec = userVec.get(player);
+        // player.sendMessage("last"+lastVec);
+
+
+        Vector moveVec = e.getFrom().toVector().subtract(e.getTo().toVector());
+        userVec.put(player,moveVec);
+
+
+        if(lastVec == null){
+            return;
+        }
+
+        //      ジャンプした瞬間
+        if(lastVec.getY() == 0 && moveVec.getY() < 0){
+
+            String key = findKey(mapID);
+            if(key == null){
+                return;
+            }
+            //      ジャンプイベントを通知
+            PlayerJumpFunction func =  jumpFunctions.get(key);
+            if(func != null){
+                if(func.onPlayerJumped(key,mapID,player)){
+                    refresh(key);
+                }
+            }
+
+        }
+
+
+    }
+
     ///////////////////////////////////////////////
     //      "key" ->　関数　をハッシュマップに保存
     static HashMap<String,DrawFunction> drawFunctions = new HashMap<String,DrawFunction>();
@@ -122,6 +213,19 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     public static void registerDisplayTouchEvent(String key,DisplayTouchFunction func){
         touchFunctions.put(key,func);
     }
+
+    //    PlayerJumpイベントを追加
+    static HashMap<String,PlayerJumpFunction> jumpFunctions = new HashMap<String,PlayerJumpFunction>();
+    public static void registerPlayerJumpEvent(String key,PlayerJumpFunction func){
+        jumpFunctions.put(key,func);
+    }
+    //    PlayerSneakイベントを追加
+    static HashMap<String,PlayerSneakFunction> sneakFunctions = new HashMap<String,PlayerSneakFunction>();
+    public static void registerPlayerSneakEvent(String key,PlayerSneakFunction func){
+        sneakFunctions.put(key,func);
+    }
+
+
 
 
     //     キー

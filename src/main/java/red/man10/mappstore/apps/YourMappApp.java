@@ -1,5 +1,6 @@
 package red.man10.mappstore.apps;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import red.man10.mappstore.DynamicMapRenderer;
 import red.man10.mappstore.MappApp;
@@ -59,6 +60,31 @@ public class YourMappApp extends MappApp {
     //    アプリを登録するためにこの関数をコールしてください
     static public void register(){
 
+
+        ///////////////////////////////////////////////////////////////////////
+        //     drawing logic
+        //     描画ロジックをここに書く
+        //////////////////////////////////////////////////////////////////////
+        DynamicMapRenderer.register( appName, drawRefreshCycle, (String key, int mapId,Graphics2D g) -> {
+
+            //  Clear screen (画面消去)
+            //  g.setColor(Color.BLACK);
+            //  g.fillRect(0,0,128,128);
+
+            g.setColor(Color.YELLOW);
+            g.setFont(new Font( "SansSerif", Font.BOLD ,10));
+            g.drawString("Your App: "+appName,10,70);
+
+            //  true -> update map / trueでマップに画像が転送されます
+            return true;
+        });
+
+
+        /////////////////////////////////////////////////////////////////////////////
+        //      マップをアイテムフレームに配置した時のイベント
+        /////////////////////////////////////////////////////////////////////////////
+
+
         /////////////////////////////////////////////////
         //      Button (nearby map) clicked event
         //      ボタン押された時の処理
@@ -112,22 +138,35 @@ public class YourMappApp extends MappApp {
         });
 
 
-        /////////////////////////////////////////////////
-        //     drawing logic
-        //     描画ロジックをここに書く
-        DynamicMapRenderer.register( appName, drawRefreshCycle, (String key, int mapId,Graphics2D g) -> {
+        /////////////////////////////////////////////////////////////////////////////
+        //      マップをもった状態のイベント
+        //      Events when player jumped with map
+        /////////////////////////////////////////////////////////////////////////////
 
-            //  Clear screen
-            //  g.setColor(Color.BLACK);
-            //  g.fillRect(0,0,128,128);
+        ////////////////////////////////////
+        //      Sneak  /　ジャンプ
+        DynamicMapRenderer.registerPlayerJumpEvent(appName,(String key,int mapId,Player player) ->{
 
-            g.setColor(Color.YELLOW);
-            g.setFont(new Font( "SansSerif", Font.BOLD ,10));
-            g.drawString("Your App: "+appName,10,70);
+            player.sendMessage("Jumped :" + key + " mapID:"+mapId);
 
-            //  true -> update map / trueでマップに画像が転送されます
+            //    true -> call drawing logic :描画更新
             return true;
         });
+
+        ////////////////////////////////////
+        //      Sneak  /　スニーク
+        DynamicMapRenderer.registerPlayerSneakEvent(appName,(String key,int mapId,Player player,boolean isSneaking) ->{
+
+            if(isSneaking){
+                player.sendMessage("Sneaked: " + key + " mapID:"+mapId);
+            }else{
+                player.sendMessage("Sneaked off: " + key + " mapID:"+mapId);
+            }
+
+            //    true -> call drawing logic :描画更新
+            return true;
+        });
+
     }
 
 
