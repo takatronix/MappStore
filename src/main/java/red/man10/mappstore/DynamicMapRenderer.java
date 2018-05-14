@@ -699,6 +699,13 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
             double yaw1Normalized = (yaw1 < 0) ? yaw1 + 360 : yaw1;
             double yaw2Normalized = (yaw2 < 0) ? yaw2 + 360 : yaw2;
             double velocity = yaw1Normalized - yaw2Normalized;
+            if(velocity > 300){
+                velocity = yaw2Normalized + (360 - yaw1Normalized);
+            }else if (velocity < -300){
+                velocity = yaw1Normalized - (360 - yaw2Normalized);
+            }
+
+
 
             Double lastVelocity = lastVelocityMap.getOrDefault(p,(Double)0.0);
             if(lastVelocity != velocity){
