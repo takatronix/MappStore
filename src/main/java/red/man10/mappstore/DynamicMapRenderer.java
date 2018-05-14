@@ -91,10 +91,14 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
     //      プレイヤーの向きが変更
     @FunctionalInterface
-    public interface PlayerDicrectionFunction{
-        boolean onPlayerDicrectionChanged(String key,int mapId,Player player,double angle,double velocity);
+    public interface PlayerYawFunction{
+        boolean onPlayerYawChanged(String key,int mapId,Player player,double angle,double velocity);
     }
 
+    @FunctionalInterface
+    public interface PlayerPitchFunction{
+        boolean onPlayerPitchChanged(String key,int mapId,Player player,double angle,double velocity);
+    }
 
 
     //     画面タッチ
@@ -216,21 +220,24 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     }
 
     //    PlayerJumpイベントを追加
-    static HashMap<String,PlayerJumpFunction> jumpFunctions = new HashMap<String,PlayerJumpFunction>();
+    static HashMap<String,PlayerJumpFunction> jumpFunctions = new HashMap<>();
     public static void registerPlayerJumpEvent(String key,PlayerJumpFunction func){
         jumpFunctions.put(key,func);
     }
     //    PlayerSneakイベントを追加
-    static HashMap<String,PlayerSneakFunction> sneakFunctions = new HashMap<String,PlayerSneakFunction>();
+    static HashMap<String,PlayerSneakFunction> sneakFunctions = new HashMap<>();
     public static void registerPlayerSneakEvent(String key,PlayerSneakFunction func){
         sneakFunctions.put(key,func);
     }
     //    Directionイベントを追加
-    static HashMap<String,PlayerDicrectionFunction> directionFunctions = new HashMap<String,PlayerDicrectionFunction>();
-    public static void registerPlayerDirectionEvent(String key,PlayerDicrectionFunction func){
-        directionFunctions.put(key,func);
+    static HashMap<String,PlayerPitchFunction> pitchFunctions = new HashMap<>();
+    public static void registerPlayerPitchEvent(String key,PlayerPitchFunction func){
+        pitchFunctions.put(key,func);
     }
-
+    static HashMap<String,PlayerYawFunction> yawFunctions = new HashMap<>();
+    public static void registerPlayerYawEvent(String key,PlayerYawFunction func){
+        yawFunctions.put(key,func);
+    }
 
 
 
@@ -672,7 +679,8 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
 
     static HashMap<Player,Location> lastLocationMap = new HashMap<>();
-    static HashMap<Player,Double> lastVelocityMap = new HashMap<>();
+    static HashMap<Player,Double> lastPitchMap = new HashMap<>();
+    static HashMap<Player,Double> lastYawMap = new HashMap<>();
 
     static  void onTimerTick() {
 
@@ -694,6 +702,27 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
             Location location = p.getLocation();
             lastLocationMap.put(p,location);
 
+            double pitch1 = location.getPitch();
+            double pitch2 = lastLocation.getPitch();
+            double pitchVelocity = pitch1 - pitch2;
+
+
+            Double lastPitch = lastPitchMap.getOrDefault(p,(Double)0.0);
+            if(pitchVelocity != lastPitch){
+                PlayerPitchFunction func = pitchFunctions.get(key);
+                if(func != null){
+                    if(func.onPlayerPitchChanged(key,mapID,p,pitch1,pitchVelocity)){
+                        refresh(key);
+                    }
+                }
+
+                lastPitchMap.put(p,(Double)pitchVelocity);
+            }
+
+
+
+
+            //      Ya左右の向き
             double yaw1 = location.getYaw();
             double yaw2 = lastLocation.getYaw();
             double yaw1Normalized = (yaw1 < 0) ? yaw1 + 360 : yaw1;
@@ -705,18 +734,16 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
                 velocity = yaw1Normalized - (360 - yaw2Normalized);
             }
 
-
-
-            Double lastVelocity = lastVelocityMap.getOrDefault(p,(Double)0.0);
+            Double lastVelocity = lastYawMap.getOrDefault(p,(Double)0.0);
             if(lastVelocity != velocity){
-                PlayerDicrectionFunction func = directionFunctions.get(key);
+                PlayerYawFunction func = yawFunctions.get(key);
                 if(func != null){
-                    if(func.onPlayerDicrectionChanged(key,mapID,p,yaw1Normalized,velocity)){
+                    if(func.onPlayerYawChanged(key,mapID,p,yaw1Normalized,velocity)){
                         refresh(key);
                     }
                 }
 
-                lastVelocityMap.put(p,(Double)velocity);
+                lastYawMap.put(p,(Double)velocity);
             }
         }
 

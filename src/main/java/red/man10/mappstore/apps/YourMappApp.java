@@ -170,10 +170,21 @@ public class YourMappApp extends MappApp {
 
 
         ///////////////////////////////////////
-        //  Direction&Velocity  /　向き&速度
-        DynamicMapRenderer.registerPlayerDirectionEvent(appName,(String key,int mapId,Player player,double angle,double velocity) ->{
+        //  Pitch&Velocity  /　上下向き&速度
+        DynamicMapRenderer.registerPlayerPitchEvent(appName,(String key,int mapId,Player player,double angle,double velocity) ->{
 
-           // player.sendMessage("angle:"+angle + " velocity:"+velocity);
+           // player.sendMessage("pitch:"+angle + " velocity:"+velocity);
+
+            //    true -> call drawing logic :描画更新
+            return true;
+        });
+
+
+        ///////////////////////////////////////
+        //  Yaw&Velocity  /　左右向き&速度
+        DynamicMapRenderer.registerPlayerYawEvent(appName,(String key,int mapId,Player player,double angle,double velocity) ->{
+
+            // player.sendMessage("angle:"+angle + " velocity:"+velocity);
 
             Graphics2D g = DynamicMapRenderer.getGraphics(mapId);
             if(g == null){
