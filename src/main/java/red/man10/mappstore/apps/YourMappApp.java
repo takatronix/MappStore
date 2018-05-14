@@ -34,7 +34,8 @@ public class YourMappApp extends MappApp {
     //     Data
     ///////////////////////////////
     static class MappData{
-        int         data;
+
+
         //   Add your data here / マップごとに保存するデータはここに追加
 
 
@@ -87,7 +88,7 @@ public class YourMappApp extends MappApp {
 
         /////////////////////////////////////////////////
         //      Button (nearby map) clicked event
-        //      ボタン押された時の処理
+        //      ボタンが押された時の処理
         DynamicMapRenderer.registerButtonEvent(appName, (String key, int mapId,Player player) -> {
 
             ///////////////////////////////////////////////////////////////
@@ -139,8 +140,8 @@ public class YourMappApp extends MappApp {
 
 
         /////////////////////////////////////////////////////////////////////////////
+        //      Events when player jumped with the map
         //      マップをもった状態のイベント
-        //      Events when player jumped with map
         /////////////////////////////////////////////////////////////////////////////
 
         ////////////////////////////////////
@@ -166,6 +167,35 @@ public class YourMappApp extends MappApp {
             //    true -> call drawing logic :描画更新
             return true;
         });
+
+
+        ///////////////////////////////////////
+        //  Direction&Velocity  /　向き&速度
+        DynamicMapRenderer.registerPlayerDirectionEvent(appName,(String key,int mapId,Player player,double angle,double velocity) ->{
+
+           // player.sendMessage("angle:"+angle + " velocity:"+velocity);
+
+            Graphics2D g = DynamicMapRenderer.getGraphics(mapId);
+            if(g == null){
+                return false;
+            }
+
+
+            int x2 = 64 + (int)(velocity * 1.0);
+
+            g.setColor(Color.black);
+            g.fillRect(0,0,128,128);
+
+            g.setColor(Color.red);
+            g.drawLine(64,80,x2,80);
+
+
+            g.drawString("angle:"+(int)angle,10,100);
+            //    true -> call drawing logic :描画更新
+            return true;
+        });
+
+
 
     }
 

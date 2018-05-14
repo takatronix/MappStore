@@ -11,10 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.map.MapCanvas;
@@ -92,6 +89,12 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
         boolean onPlayerSneaked(String key,int mapId,Player player,boolean isSneaking);
     }
 
+    //      プレイヤーの向きが変更
+    @FunctionalInterface
+    public interface PlayerDicrectionFunction{
+        boolean onPlayerDicrectionChanged(String key,int mapId,Player player,double angle,double velocity);
+    }
+
 
 
     //     画面タッチ
@@ -140,8 +143,8 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
     }
 
-
-    static HashMap<Player,Vector> userVec = new HashMap<Player,Vector>();
+    static HashMap<Player,Vector> userMovingVec = new HashMap<Player,Vector>();
+    //static HashMap<Player,Location> userLocation= new HashMap<Player,Location>();
 
     @EventHandler    public void onMove(PlayerMoveEvent e) {
 
@@ -155,20 +158,20 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
         int mapID = (int)item.getDurability();
 
 
-        Vector lastVec = userVec.get(player);
-        // player.sendMessage("last"+lastVec);
+        Vector lastMovingVec = userMovingVec.get(player);
+        Vector movingVec = e.getFrom().toVector().subtract(e.getTo().toVector());
+        userMovingVec.put(player,movingVec);
 
 
-        Vector moveVec = e.getFrom().toVector().subtract(e.getTo().toVector());
-        userVec.put(player,moveVec);
 
-
-        if(lastVec == null){
+        if(lastMovingVec == null){
             return;
         }
 
+        ////////////////////////////////////
         //      ジャンプした瞬間
-        if(lastVec.getY() == 0 && moveVec.getY() < 0){
+        ////////////////////////////////////
+        if(lastMovingVec.getY() == 0 && movingVec.getY() < 0){
 
             String key = findKey(mapID);
             if(key == null){
@@ -181,9 +184,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
                     refresh(key);
                 }
             }
-
         }
-
 
     }
 
@@ -223,6 +224,11 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     static HashMap<String,PlayerSneakFunction> sneakFunctions = new HashMap<String,PlayerSneakFunction>();
     public static void registerPlayerSneakEvent(String key,PlayerSneakFunction func){
         sneakFunctions.put(key,func);
+    }
+    //    Directionイベントを追加
+    static HashMap<String,PlayerDicrectionFunction> directionFunctions = new HashMap<String,PlayerDicrectionFunction>();
+    public static void registerPlayerDirectionEvent(String key,PlayerDicrectionFunction func){
+        directionFunctions.put(key,func);
     }
 
 
@@ -272,10 +278,15 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
     int tickRefresh = 0;
 
+
+
+
     /////////////////////////////////
     //      Tickイベント
     //      描画更新があれば反映
     public void onTick(){
+
+
 
         if (refreshOnce){
             refreshOnce = false;
@@ -658,10 +669,58 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
         return ret;
     }
 
+
+
+    static HashMap<Player,Location> lastLocationMap = new HashMap<>();
+    static HashMap<Player,Double> lastVelocityMap = new HashMap<>();
+
     static  void onTimerTick() {
+
+        ///////////////////////////////////////////////////
+        //      向きの違いから検出しマウスのベロシティを求める
+        for(Player p:Bukkit.getOnlinePlayers()){
+            ItemStack item = p.getInventory().getItemInMainHand();
+            if(item.getType() != Material.MAP){
+                continue;
+            }
+            int mapID = item.getDurability();
+            String key = findKey(mapID);
+            if(key == null){
+                continue;
+            }
+
+            Location lastLocation = lastLocationMap.get(p);
+
+            Location location = p.getLocation();
+            lastLocationMap.put(p,location);
+
+            double yaw1 = location.getYaw();
+            double yaw2 = lastLocation.getYaw();
+            double yaw1Normalized = (yaw1 < 0) ? yaw1 + 360 : yaw1;
+            double yaw2Normalized = (yaw2 < 0) ? yaw2 + 360 : yaw2;
+            double velocity = yaw1Normalized - yaw2Normalized;
+
+            Double lastVelocity = lastVelocityMap.getOrDefault(p,(Double)0.0);
+            if(lastVelocity != velocity){
+                PlayerDicrectionFunction func = directionFunctions.get(key);
+                if(func != null){
+                    if(func.onPlayerDicrectionChanged(key,mapID,p,yaw1Normalized,velocity)){
+                        refresh(key);
+                    }
+                }
+
+                lastVelocityMap.put(p,(Double)velocity);
+            }
+        }
+
+        //      マップごとのTick処理
         for(DynamicMapRenderer renderer:renderers){
             renderer.onTick();
         }
+
+
+
+
     }
     static public void updateAll() {
 
