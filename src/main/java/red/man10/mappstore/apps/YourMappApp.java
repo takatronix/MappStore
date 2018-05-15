@@ -145,7 +145,7 @@ public class YourMappApp extends MappApp {
         /////////////////////////////////////////////////////////////////////////////
 
         ////////////////////////////////////
-        //      Sneak  /　ジャンプ
+        //      Jump  /　ジャンプ
         DynamicMapRenderer.registerPlayerJumpEvent(appName,(String key,int mapId,Player player) ->{
 
             player.sendMessage("Jumped :" + key + " mapID:"+mapId);
