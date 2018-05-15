@@ -262,7 +262,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     //      bukkitからrenderコールされた回数
     public int renderCount = 0;
     //      デバッグ表示フラグ
-    static public boolean debugMode = true;
+    static public boolean debugMode = false;
 
 
     //////////////////////////////////////
@@ -820,7 +820,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
     /////////////////////////////////////
     //       イメージを描画
-    static Boolean drawImage( Graphics2D g,String imageKey,int x,int y,int w,int h){
+    static public Boolean drawImage( Graphics2D g,String imageKey,int x,int y,int w,int h){
         BufferedImage image = DynamicMapRenderer.image(imageKey);
         if(image == null){
             return false;
