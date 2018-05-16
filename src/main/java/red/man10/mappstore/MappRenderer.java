@@ -412,8 +412,10 @@ public class MappRenderer extends MapRenderer implements Listener {
             }
 
 
-            world.playEffect(topLeft.toLocation(world), Effect.COLOURED_DUST,0);
-            world.playEffect(bottomRight.toLocation(world), Effect.COLOURED_DUST,0);
+            if(debugMode){
+                world.playEffect(topLeft.toLocation(world), Effect.COLOURED_DUST,0);
+                world.playEffect(bottomRight.toLocation(world), Effect.COLOURED_DUST,0);
+            }
 
             //      視線とブロックの交差点
             Vector hit = rayTrace.positionOfIntersection(bb,rayDistance,rayAccuracy);
