@@ -4,6 +4,8 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
@@ -32,7 +34,7 @@ import static java.lang.Math.sqrt;
 import static org.bukkit.Bukkit.getServer;
 
 //////////////////////////////////////////////////////////
-//     DynamicMapRenderer
+//     MappRenderer
 //                             created by takatronix.com
 //
 //     https://github.com/takatronix/MappStore/
@@ -42,7 +44,7 @@ import static org.bukkit.Bukkit.getServer;
 
 //////////////////////////////////////////////////////////
 //    (1)      Setup
-//    プラグインのonEnable()で　DynamicMapRenderer.setup(this)
+//    プラグインのonEnable()で　MappRenderer.setup(this)
 //
 //      pluginsfolder/images/
 //      の下に画像をおくと、自動読み込みされます
@@ -51,16 +53,16 @@ import static org.bukkit.Bukkit.getServer;
 //      (2) onEnable()などで描画関数登録
 
 
-public class DynamicMapRenderer extends MapRenderer implements Listener {
+public class MappRenderer extends MapRenderer implements Listener {
 
 
     //////////////////////////////////////////////
     //      Singleton
-    private static DynamicMapRenderer sharedInstance = new DynamicMapRenderer();
-    private DynamicMapRenderer() {
-        Bukkit.getLogger().info("DynamicMapRenderer created..");
+    private static MappRenderer sharedInstance = new MappRenderer();
+    private MappRenderer() {
+        Bukkit.getLogger().info("MappRenderer created..");
     }
-    public static DynamicMapRenderer getInstance() {
+    public static MappRenderer getInstance() {
         return sharedInstance;
     }
 
@@ -69,6 +71,10 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     @FunctionalInterface
     public interface DrawFunction{
         boolean draw(String key,int mapId,Graphics2D g);
+    }
+    @FunctionalInterface
+    public interface InitFunction{
+        boolean onInit(String key,int mapId);
     }
 
     //      ボタンクリックイベント
@@ -109,13 +115,13 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     @EventHandler
     public void onItemInteract(PlayerInteractEntityEvent event){
         //           回転抑制用
-        DynamicMapRenderer.onPlayerInteractEntityEvent(event);
+        MappRenderer.onPlayerInteractEntityEvent(event);
     }
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
 
         //      イベントを通知してやる（ボタン検出用)
-        DynamicMapRenderer.onPlayerInteractEvent(e);
+        MappRenderer.onPlayerInteractEvent(e);
     }
     @EventHandler
     public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
@@ -147,8 +153,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
     }
 
-    static HashMap<Player,Vector> userMovingVec = new HashMap<Player,Vector>();
-    //static HashMap<Player,Location> userLocation= new HashMap<Player,Location>();
+    static HashMap<Player,Vector> userMovingVec = new HashMap<>();
 
     @EventHandler    public void onMove(PlayerMoveEvent e) {
 
@@ -194,48 +199,56 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
     ///////////////////////////////////////////////
     //      "key" ->　関数　をハッシュマップに保存
-    static HashMap<String,DrawFunction> drawFunctions = new HashMap<String,DrawFunction>();
-    static HashMap<String,Integer> drawRefreshTimeMap = new HashMap<String,Integer>();
+    static HashMap<String,DrawFunction> drawFunctions = new HashMap<>();
+    static HashMap<String,Integer> drawRefreshTimeMap = new HashMap<>();
+
+
+    //      初期化関数登録
+    static HashMap<String,InitFunction> initfunctions = new HashMap<>();
+    public static void init(String key,InitFunction func){
+        initfunctions.put(key,func);
+    }
+
 
     //
-    static HashMap<String,ButtonClickFunction> buttonFunctions = new HashMap<String,ButtonClickFunction>();
-    static HashMap<String,DisplayTouchFunction> touchFunctions = new HashMap<String,DisplayTouchFunction>();
+    static HashMap<String,ButtonClickFunction> buttonFunctions = new HashMap<>();
+    static HashMap<String,DisplayTouchFunction> touchFunctions = new HashMap<>();
 
     //        描画検索用
-    static ArrayList<DynamicMapRenderer> renderers = new ArrayList<DynamicMapRenderer>();
+    static ArrayList<MappRenderer> renderers = new ArrayList<MappRenderer>();
     //      描画関数をキーを登録
     //      key: キー func: 描画関数 refreshIntervalTick:自動更新周期(1tick=1/20秒) 0で自動更新しない
-    public static void register(String key,int refreshIntervalTick,DrawFunction func){
+    public static void draw(String key,int refreshIntervalTick,DrawFunction func){
         drawRefreshTimeMap.put(key,refreshIntervalTick);
         drawFunctions.put(key,func);
     }
     //     ボタンクリックイベントを追加
-    public static void registerButtonEvent(String key,ButtonClickFunction func){
+    public static void buttonEvent(String key,ButtonClickFunction func){
         buttonFunctions.put(key,func);
     }
 
     //     タッチイベントを追加
-    public static void registerDisplayTouchEvent(String key,DisplayTouchFunction func){
+    public static void displayTouchEvent(String key,DisplayTouchFunction func){
         touchFunctions.put(key,func);
     }
 
     //    PlayerJumpイベントを追加
     static HashMap<String,PlayerJumpFunction> jumpFunctions = new HashMap<>();
-    public static void registerPlayerJumpEvent(String key,PlayerJumpFunction func){
+    public static void playerJumpEvent(String key,PlayerJumpFunction func){
         jumpFunctions.put(key,func);
     }
     //    PlayerSneakイベントを追加
     static HashMap<String,PlayerSneakFunction> sneakFunctions = new HashMap<>();
-    public static void registerPlayerSneakEvent(String key,PlayerSneakFunction func){
+    public static void playerSneakEvent(String key,PlayerSneakFunction func){
         sneakFunctions.put(key,func);
     }
     //    Directionイベントを追加
     static HashMap<String,PlayerPitchFunction> pitchFunctions = new HashMap<>();
-    public static void registerPlayerPitchEvent(String key,PlayerPitchFunction func){
+    public static void playerPitchEvent(String key,PlayerPitchFunction func){
         pitchFunctions.put(key,func);
     }
     static HashMap<String,PlayerYawFunction> yawFunctions = new HashMap<>();
-    public static void registerPlayerYawEvent(String key,PlayerYawFunction func){
+    public static void playerYawEvent(String key,PlayerYawFunction func){
         yawFunctions.put(key,func);
     }
 
@@ -254,7 +267,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     //      一度だけ更新する
     public boolean refreshOnce = false;
     //      マップへ転送する
-    public boolean updateMapFlag = false;
+    public boolean updateMapOnce = false;
     //      描画時間
     public long drawingTime = 0;
     //      描画した回数
@@ -275,10 +288,10 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
             long startTime = System.nanoTime();
             //      描画関数をコール
             if(func.draw(key,mapId, bufferedImage.createGraphics())){
-                updateMapFlag = true;
+                updateMapOnce = true;
             }
             this.drawingTime =  System.nanoTime() - startTime;
-           // Bukkit.getLogger().info("drawtime:"+key + ":"+drawingTime);
+            //Bukkit.getLogger().info("drawtime:"+key + ":"+drawingTime);
         }
     }
 
@@ -321,10 +334,9 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     public void render(MapView map, MapCanvas canvas, Player player) {
 
         //     オフスクリーンバッファからコピー
-        if(updateMapFlag){
-           // Bukkit.getLogger().info("rendering:"+this.key);
+        if(updateMapOnce){
             canvas.drawImage(0,0,bufferedImage);
-            updateMapFlag  = false;
+            updateMapOnce  = false;
             if(debugMode){
                 //      描画回数を表示(debug)
                 canvas.drawText( 4,4, MinecraftFont.Font, key + "/map:" + mapId);
@@ -421,7 +433,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
                 int px = (int)dx;
                 int py = (int)dy;
 
-                player.sendMessage(px+","+py);
+               // player.sendMessage(px+","+py);
 
                 //      タッチイベントを通知
                 DisplayTouchFunction func =  touchFunctions.get(key);
@@ -512,16 +524,18 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     }
 
 
+    static JavaPlugin plugin = null;
     /////////////////////////////////
     //          初期化
     /////////////////////////////////
     static public void setup(JavaPlugin plugin){
 
-        DynamicMapRenderer instance = DynamicMapRenderer.getInstance();
+        MappRenderer instance = MappRenderer.getInstance();
         getServer().getPluginManager().registerEvents (instance,plugin);
 
         loadImages(plugin);
         setupMaps(plugin);
+        MappRenderer.plugin = plugin;
     }
 
 
@@ -529,7 +543,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     //////////////////////////////////////////////////////////////////////
     ///    サーバーシャットダウンでレンダラはは初期化されてしまうので
     ///    再起動後にマップを作成する必要がある　
-    ///    プラグインのonEnable()で　DynamicMapRenderer.setupMaps(this)
+    ///    プラグインのonEnable()で　MappRenderer.setupMaps(this)
     //     で初期化して設定をロードすること
     static void setupMaps(JavaPlugin plugin) {
 
@@ -560,8 +574,9 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
                 map.removeRenderer(mr);
             }
 
-            DynamicMapRenderer renderer = new DynamicMapRenderer();
+            MappRenderer renderer = new MappRenderer();
 
+            renderer.updateMapOnce = true;
             renderer.refreshOnce = true;
             renderer.refreshInterval = drawRefreshTimeMap.getOrDefault(key,0);
             renderer.key = key;
@@ -573,6 +588,14 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
             //     描画用に保存
             renderers.add(renderer);
+
+            //      初期化を呼ぶ　
+            InitFunction func = initfunctions.get(key);
+            if(func != null) {
+                if(func.onInit(key,id)){
+                    refresh(key);
+                }
+            }
 
             Bukkit.getLogger().info("setupMap: key:"+key + "id:"+id);
             nmlist.add(ids);
@@ -587,7 +610,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
         Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             @Override
             public void run() {
-                DynamicMapRenderer.onTimerTick();;
+                MappRenderer.onTimerTick();;
             }
         }, 0, 1);
 
@@ -630,11 +653,15 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
             map.removeRenderer(mr);
         }
 
-       DynamicMapRenderer renderer = new DynamicMapRenderer();
+       MappRenderer renderer = new MappRenderer();
        renderer.key = key;
        renderer.refreshOnce = true;
+       renderer.updateMapOnce = true;
        renderer.mapId = mapId;
        map.addRenderer(renderer);
+
+
+
 
        ItemMeta im = m.getItemMeta();
        im.addEnchant(Enchantment.DURABILITY, 1, true);
@@ -643,13 +670,20 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
        //       識別用に保存
        renderers.add(renderer);
+       //      初期化を呼ぶ　
+       InitFunction func = initfunctions.get(key);
+       if(func != null) {
+           if(func.onInit(key,mapId)){
+               refresh(key);
+           }
+       }
 
        return m;
     }
 
     //      mapIdからキーを検索
     static String findKey(int mapId){
-        for(DynamicMapRenderer renderer:renderers){
+        for(MappRenderer renderer:renderers){
             if(renderer.mapId == mapId){
                 return renderer.key;
             }
@@ -666,9 +700,26 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
             return 0;
         }
         int ret = 0;
-        for(DynamicMapRenderer renderer:renderers){
+        for(MappRenderer renderer:renderers){
             if(renderer.key.equals(key)){
                 renderer.refreshOnce = true;
+                ret++;
+            }
+        }
+
+        return ret;
+    }
+    //      描画する
+    //      一致したキーの数を返す
+    static int updateMap(String key){
+
+        if(key == null){
+            return 0;
+        }
+        int ret = 0;
+        for(MappRenderer renderer:renderers){
+            if(renderer.key.equals(key)){
+                renderer.updateMapOnce = true;
                 ret++;
             }
         }
@@ -699,8 +750,13 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
 
             Location lastLocation = lastLocationMap.get(p);
 
+
             Location location = p.getLocation();
             lastLocationMap.put(p,location);
+            if(lastLocation == null){
+                continue;
+            }
+
 
             double pitch1 = location.getPitch();
             double pitch2 = lastLocation.getPitch();
@@ -748,7 +804,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
         }
 
         //      マップごとのTick処理
-        for(DynamicMapRenderer renderer:renderers){
+        for(MappRenderer renderer:renderers){
             renderer.onTick();
         }
 
@@ -759,24 +815,62 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
     static public void updateAll() {
 
         Bukkit.getLogger().info("UpdateAll");
-        for(DynamicMapRenderer renderer:renderers){
+        for(MappRenderer renderer:renderers){
             renderer.refreshOnce = true;
+            renderer.updateMapOnce = true;
         }
 
         return ;
     }
 
+    
+    
     static public Graphics2D getGraphics(int mapId){
-        for(DynamicMapRenderer renderer:renderers){
+        for(MappRenderer renderer:renderers){
             if(renderer.mapId == mapId){
                 return renderer.bufferedImage.createGraphics();
             }
         }
+        Bukkit.getLogger().warning("mapID"+mapId+"がみつからない！");
         return null;
     }
 
     //      イメージマップ　
     static HashMap<String,BufferedImage> imageMap =  new HashMap<String,BufferedImage>();
+
+
+
+    static public int listFolder(String directoryName,boolean subDir, ArrayList<File> files) {
+        File directory = new File(directoryName);
+
+        File[] fList = directory.listFiles();
+        for (File file : fList) {
+            if (file.isFile()) {
+                files.add(file);
+            } else if (file.isDirectory()) {
+                if(subDir){
+                    listFolder(file.getAbsolutePath(), subDir,files);
+                }
+            }
+        }
+        return files.size();
+    }
+
+    public static FileConfiguration getAppConfig(String appName){
+        String path = plugin.getDataFolder()+"/"+appName+".yml";
+        FileConfiguration data = YamlConfiguration.loadConfiguration(new File(path));
+        return data;
+    }
+    public static boolean saveAppConfig(String appName,FileConfiguration config){
+        String path = plugin.getDataFolder()+"/"+appName+".yml";
+        try{
+            config.save(path);
+        }catch (Exception e){
+            return false;
+        }
+
+        return true;
+    }
 
 
     ///////////////////////////////////////////////////
@@ -787,11 +881,9 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
         int ret = 0;
         File folder = new File(plugin.getDataFolder(), File.separator + "images");
 
-        File[] files = folder.listFiles();
-        if(files == null){
-            Bukkit.getLogger().info("There is no images.");
-            return 0;
-        }
+        ArrayList<File> files = new  ArrayList<File>();
+        listFolder(plugin.getDataFolder()+"/images",true,files);
+
         for (File f : files) {
             if (f.isFile()){
                 String filename = f.getName();
@@ -818,18 +910,7 @@ public class DynamicMapRenderer extends MapRenderer implements Listener {
         return ret;
     }
 
-    /////////////////////////////////////
-    //       イメージを描画
-    static public Boolean drawImage( Graphics2D g,String imageKey,int x,int y,int w,int h){
-        BufferedImage image = DynamicMapRenderer.image(imageKey);
-        if(image == null){
-            return false;
-        }
 
-        g.drawImage(image,x,y,w,h,null);
-
-        return true;
-    }
 
     /////////////////////////////////////
     //      キャッシュからイメージ取りだし

@@ -6,12 +6,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.io.BukkitObjectInputStream;
 import red.man10.mappstore.apps.*;
 
 import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class MappStorePlugin extends JavaPlugin  implements Listener {
+
+
 
     @Override
     public void onEnable() {
@@ -27,7 +32,7 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
 
         //////////////////////////////////////
         //    Initialize map system
-        DynamicMapRenderer.setup(this);
+        MappRenderer.setup(this);
 
         //////////////////////////////////////
         //      Register your mApp
@@ -36,18 +41,35 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         YourMappApp.register();
         DrawMappApp.register();
         BallMappApp.register();
+        MazeMappApp.register();
 
     }
 
+
+
+
+
     public void createDefaultImages() {
         try {
+
+            //      画像フォルダがなければ作成
             File file = new File(getDataFolder(),  "images");
             if (!file.exists()){
                 file.mkdirs();
                 saveResource("images",false);
-                saveResource("images/monsterball.png",false);
-              //  plugin.saveResource("newYML.yml", false);
             }
+
+
+            saveResource("images/monsterball.png",false);
+            saveResource("images/maze/maze_goal.png",false);
+            saveResource("images/maze/maze_player.png",false);
+            saveResource("images/maze/maze_button.png",false);
+            saveResource("images/maze/maze_wall_2.png",false);
+            saveResource("images/maze/maze_wall_1.png",false);
+
+
+
+
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -56,23 +78,27 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
     ///////////////////////////////////////////
     //      Get map app
     public boolean giveMap(Player p, String mappName){
-        ItemStack map = DynamicMapRenderer.getMapItem(this,mappName);
+        ItemStack map = MappRenderer.getMapItem(this,mappName);
         if(map == null){
             p.sendMessage("§2[Error]No '"+mappName+"' map application.");
-
-            String appString = "loaded apps:";
-            List<String> apps = DynamicMapRenderer.getAppList();
-            for(String s : apps){
-                appString += "'"+s+"'";
-            }
-            p.sendMessage(apps.toString());
+            showList(p);
             return false;
         }
         p.getInventory().addItem(map);
-        DynamicMapRenderer.updateAll();
+        MappRenderer.updateAll();
         return true;
     }
 
+    //      show List
+    public boolean showList(Player p){
+        String appString = "loaded apps:";
+        List<String> apps = MappRenderer.getAppList();
+        for(String s : apps){
+            appString += "'"+s+"'";
+        }
+        p.sendMessage(apps.toString());
+        return true;
+    }
 
 
     @Override

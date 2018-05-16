@@ -3,7 +3,8 @@ package red.man10.mappstore.apps;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import red.man10.mappstore.DynamicMapRenderer;
+import red.man10.mappstore.MappDraw;
+import red.man10.mappstore.MappRenderer;
 import red.man10.mappstore.MappApp;
 import java.awt.*;
 import java.util.ArrayList;
@@ -153,34 +154,23 @@ public class BallMappApp extends MappApp {
         //     drawing logic
         //     描画ロジックをここに書く
         //////////////////////////////////////////////////////////////////////
-        DynamicMapRenderer.register( appName, drawRefreshCycle, (String key, int mapId,Graphics2D g) -> {
+        MappRenderer.draw( appName, drawRefreshCycle, (String key, int mapId,Graphics2D g) -> {
 
             g.setColor(Color.BLACK);
             g.fillRect(0,0,128,128);
 
-/*
-            //      ボールぶつかりチェック
-            for(Ball b:balls) {
-                for(Ball b2:balls){
-                    if(!b.equals(b2)){
-                        b.hitCheck(b2);
-
-                    }
-                }
-            }
-*/
             for(Ball ball:balls){
                 if( ball.hitCheck(cursor)) {
                     hit++;
                 }
                 ball.move();
-                DynamicMapRenderer.drawImage(g,"monsterball",(int)ball.x - 4,(int)ball.y - 4,8,8);
+                MappDraw.drawImage(g,"monsterball",(int)ball.x - 4,(int)ball.y - 4,8,8);
             }
 
 
             cursor.move();
 
-            DynamicMapRenderer.drawImage(g,"monsterball",(int)cursor.x - 4,(int)cursor.y - 4,16,16);
+            MappDraw.drawImage(g,"monsterball",(int)cursor.x - 4,(int)cursor.y - 4,16,16);
 
             g.setColor(Color.RED);
             g.drawString("hit:"+hit, 10, 10);
@@ -197,7 +187,7 @@ public class BallMappApp extends MappApp {
         /////////////////////////////////////////////////
         //      Button (nearby map) clicked event
         //      ボタンが押された時の処理
-        DynamicMapRenderer.registerButtonEvent(appName, (String key, int mapId,Player player) -> {
+        MappRenderer.buttonEvent(appName, (String key, int mapId,Player player) -> {
 
             ///////////////////////////////////////////////////////////////
             //      mapごとに別々のデータを表示したい場合は
@@ -213,7 +203,7 @@ public class BallMappApp extends MappApp {
             //////////////////////////////////////////////
             //  Get Graphics context for drawing
             //  描画用コンテキスト取得
-            Graphics2D g = DynamicMapRenderer.getGraphics(mapId);
+            Graphics2D g = MappRenderer.getGraphics(mapId);
             if(g == null){
                 return false;
             }
@@ -227,12 +217,12 @@ public class BallMappApp extends MappApp {
         /////////////////////////////////////////////////
         //      Display touch event
         //      ディスプレイがタッチされた時の処理
-        DynamicMapRenderer.registerDisplayTouchEvent(appName, (String key, int mapId, Player player, int x, int y) -> {
+        MappRenderer.displayTouchEvent(appName, (String key, int mapId, Player player, int x, int y) -> {
 
             //////////////////////////////////////////////
             //  Get Graphics context for drawing
             //  描画用コンテキスト取得
-            Graphics2D gr = DynamicMapRenderer.getGraphics(mapId);
+            Graphics2D gr = MappRenderer.getGraphics(mapId);
             if(gr == null){
                 return false;
             }
@@ -254,7 +244,7 @@ public class BallMappApp extends MappApp {
 
         ////////////////////////////////////
         //      Sneak  /　ジャンプ
-        DynamicMapRenderer.registerPlayerJumpEvent(appName,(String key,int mapId,Player player) ->{
+        MappRenderer.playerJumpEvent(appName,(String key,int mapId,Player player) ->{
 
             player.sendMessage("Jumped :" + key + " mapID:"+mapId);
 
@@ -275,7 +265,7 @@ public class BallMappApp extends MappApp {
 
         ////////////////////////////////////
         //      Sneak  /　スニーク
-        DynamicMapRenderer.registerPlayerSneakEvent(appName,(String key,int mapId,Player player,boolean isSneaking) ->{
+        MappRenderer.playerSneakEvent(appName,(String key,int mapId,Player player,boolean isSneaking) ->{
 
             if(isSneaking){
                 player.sendMessage("Sneaked: " + key + " mapID:"+mapId);
@@ -290,7 +280,7 @@ public class BallMappApp extends MappApp {
 
         ///////////////////////////////////////
         //  Pitch&Velocity  /　上下向き&速度
-        DynamicMapRenderer.registerPlayerPitchEvent(appName,(String key,int mapId,Player player,double angle,double velocity) ->{
+        MappRenderer.playerPitchEvent(appName,(String key,int mapId,Player player,double angle,double velocity) ->{
 
             //player.sendMessage("pitch:"+angle + " velocity:"+velocity);
 
@@ -315,11 +305,11 @@ public class BallMappApp extends MappApp {
 
         ///////////////////////////////////////
         //  Yaw&Velocity  /　左右向き&速度
-        DynamicMapRenderer.registerPlayerYawEvent(appName,(String key,int mapId,Player player,double angle,double velocity) ->{
+        MappRenderer.playerYawEvent(appName,(String key,int mapId,Player player,double angle,double velocity) ->{
 
             // player.sendMessage("angle:"+angle + " velocity:"+velocity);
 
-            Graphics2D g = DynamicMapRenderer.getGraphics(mapId);
+            Graphics2D g = MappRenderer.getGraphics(mapId);
             if(g == null){
                 return false;
             }

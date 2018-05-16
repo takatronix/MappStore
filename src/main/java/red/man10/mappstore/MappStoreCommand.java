@@ -50,8 +50,10 @@ public class MappStoreCommand implements CommandExecutor {
             p.sendMessage("§e/mapp get [mAppkey]");
             return false;
         }
-
-
+        if(command.equalsIgnoreCase("list")) {
+            plugin.showList(p);
+            return true;
+        }
         return true;
     }
 
@@ -59,6 +61,8 @@ public class MappStoreCommand implements CommandExecutor {
         p.sendMessage("§e§l Minecraft Mapp App Store / created by takatronix.com");
         p.sendMessage("§e§l supported at 'man10.red' <-- Japanese Minecraft Server");
 
-        p.sendMessage("§e/mapp get [mappkey]");
+        p.sendMessage("§e/mapp list / show loaded mapp apps.");
+        p.sendMessage("§e/mapp get [mappkey] / get mapp app");
+
     }
 }

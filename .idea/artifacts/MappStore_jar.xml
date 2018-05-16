@@ -6,6 +6,7 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/spigot-1.12.2.jar" path-in-jar="/" />
       <element id="directory" name="images">
         <element id="dir-copy" path="$PROJECT_DIR$/src/main/resources/images" />
+        <element id="dir-copy" path="$PROJECT_DIR$/src/main/resources/images/maze" />
       </element>
     </root>
   </artifact>
