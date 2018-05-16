@@ -42,7 +42,7 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         DrawMappApp.register();
         BallMappApp.register();
         MazeMappApp.register();
-
+        WeatherMappApp.register();
     }
 
 
@@ -66,6 +66,9 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
             saveResource("images/maze/maze_button.png",false);
             saveResource("images/maze/maze_wall_2.png",false);
             saveResource("images/maze/maze_wall_1.png",false);
+
+            saveResource("images/mcclock/mcclock_rainy.png",false);
+            saveResource("images/mcclock/mcclock_sunny.png",false);
 
 
 

@@ -1,6 +1,6 @@
 package red.man10.mappstore.apps;
 
-import org.bukkit.Bukkit;
+
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import red.man10.mappstore.MappRenderer;

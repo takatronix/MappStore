@@ -84,7 +84,7 @@ import java.util.Random;
             g.fillRect(0,0,128,128);
             g.setColor(Color.red);
             g.drawString(" set in item frame",0,60);
-            g.drawString(" press button below",0,80);
+            g.drawString(" press the button",0,80);
 
             return true;  //  true -> update map / trueでマップに画像が転送されます
         });
