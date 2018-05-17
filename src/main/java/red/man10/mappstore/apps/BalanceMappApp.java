@@ -29,37 +29,6 @@ public class BalanceMappApp extends MappApp {
     //     appTickCycle = 1 -> 1/20 sec
     static int  drawRefreshCycle = 0;
 
-
-    ///////////////////////////////
-    //     Data
-    ///////////////////////////////
-    static class MappData{
-
-
-        //   Add your data here / マップごとに保存するデータはここに追加
-
-
-    }
-    static HashMap<Integer,MappData> hashMap = new  HashMap<Integer,MappData>();
-
-    //      ユーザーデーター保存
-    static MappData  loadData(int mapId) {
-        MappData data = hashMap.get(mapId);
-        if(data == null){
-            data = new MappData();
-        }
-        return data;
-    }
-    //      ユーザーデータ読み込
-    static MappData saveData(int mapId,MappData data){
-        return hashMap.put(mapId,data);
-    }
-
-
-    static FileConfiguration config = MappRenderer.getAppConfig(appName);
-    //      MappRenderer.saveAppConfig(appName,config)  で保存
-
-
     ///////////////////////////////////////////////////////
     //    Call this function to register the your app
     //    アプリを登録するためにこの関数をコールしてください
@@ -80,9 +49,7 @@ public class BalanceMappApp extends MappApp {
             g.setColor(Color.BLACK);
             g.fillRect(0,0,128,128);
 
-
             g.setColor(Color.RED);
-
             g.drawString("Set map in item frame",0,60);
             g.drawString("   Touch to start",0,80);
 
