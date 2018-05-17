@@ -23,7 +23,7 @@ public class ClockMappApp extends MappApp {
     ////////////////////////////////////////////
     //     Draw refresh Cycle:描画割り込み周期
     //     appTickCycle = 1 -> 1/20 sec
-    final static int  drawRefreshCycle = 20 * 10;
+    final static int  drawRefreshCycle = 20 * 60;
 
     ///////////////////////////////////////////////////////
     //      Call this function to register your app
