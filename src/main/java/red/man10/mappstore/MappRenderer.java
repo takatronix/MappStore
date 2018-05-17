@@ -209,6 +209,8 @@ public class MappRenderer extends MapRenderer implements Listener {
     static HashMap<String,InitFunction> initfunctions = new HashMap<>();
     public static void init(String key,InitFunction func){
         initfunctions.put(key,func);
+
+
     }
 
 
@@ -561,6 +563,8 @@ public class MappRenderer extends MapRenderer implements Listener {
         List<String> nmlist = new ArrayList<String>();
         renderers.clear();
 
+
+        Bukkit.getLogger().info("setupMaps --------------------------");
         for (String ids : mlist) {
 
             //      mapId,keyのデータを取得
@@ -594,14 +598,6 @@ public class MappRenderer extends MapRenderer implements Listener {
 
             //     描画用に保存
             renderers.add(renderer);
-
-            //      初期化を呼ぶ　
-            InitFunction func = initfunctions.get(key);
-            if(func != null) {
-                if(func.onInit(key,id)){
-                    refresh(key);
-                }
-            }
 
             Bukkit.getLogger().info("setupMap: key:"+key + "id:"+id);
             nmlist.add(ids);
@@ -700,7 +696,7 @@ public class MappRenderer extends MapRenderer implements Listener {
 
     //      描画する
     //      一致したキーの数を返す
-    static int refresh(String key){
+    static public int refresh(String key){
 
         if(key == null){
             return 0;
@@ -717,7 +713,7 @@ public class MappRenderer extends MapRenderer implements Listener {
     }
     //      描画する
     //      一致したキーの数を返す
-    static int updateMap(String key){
+    static public int updateMap(String key){
 
         if(key == null){
             return 0;
@@ -731,6 +727,21 @@ public class MappRenderer extends MapRenderer implements Listener {
         }
 
         return ret;
+    }
+
+    static public void initAllMaps() {
+
+        Bukkit.getLogger().info("initAllMap");
+        for(MappRenderer renderer:renderers){
+            InitFunction func = initfunctions.get(renderer.key);
+            if(func == null){
+                continue;
+            }
+            //      初期化
+            func.onInit(renderer.key,renderer.mapId);
+
+        }
+
     }
 
 
@@ -829,7 +840,6 @@ public class MappRenderer extends MapRenderer implements Listener {
         return ;
     }
 
-    
     
     static public Graphics2D getGraphics(int mapId){
         for(MappRenderer renderer:renderers){

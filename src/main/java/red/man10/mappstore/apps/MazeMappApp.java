@@ -15,6 +15,7 @@
  */
 
 package red.man10.mappstore.apps;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -79,6 +80,8 @@ import java.util.Random;
         MappRenderer.init(appName, (String key, int mapId) ->{
             Graphics2D g = MappRenderer.getGraphics(mapId);
 
+
+            Bukkit.getLogger().info("***** initializing maze app *****");
 
             g.setColor(Color.black);
             g.fillRect(0,0,128,128);

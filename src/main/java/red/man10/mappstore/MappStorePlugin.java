@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.map.MapRenderer;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import red.man10.mappstore.apps.*;
@@ -47,7 +48,12 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         BalanceMappApp.register();
         AnalogClockApp.register();
 
+        //      call init
+        MappRenderer.initAllMaps();
+
+
     }
+
 
 
 

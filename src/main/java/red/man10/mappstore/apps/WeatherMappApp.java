@@ -1,5 +1,7 @@
 package red.man10.mappstore.apps;
 
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import red.man10.mappstore.MappDraw;
 import red.man10.mappstore.MappRenderer;
 import org.bukkit.World;
@@ -30,7 +32,7 @@ import java.util.HashMap;
 
 public class WeatherMappApp extends MappApp {
 
-    static World w;
+    //static World w;
 
     ////////////////////////////////////////////
     //      App name (must be unique)
@@ -40,7 +42,7 @@ public class WeatherMappApp extends MappApp {
     ////////////////////////////////////////////
     //     Draw refresh Cycle:描画割り込み周期
     //     appTickCycle = 1 -> 1/20 sec
-    static int  drawRefreshCycle = 20;
+    static int  drawRefreshCycle = 20*10;
 
 
     ///////////////////////////////
@@ -48,6 +50,7 @@ public class WeatherMappApp extends MappApp {
     ///////////////////////////////
     static class MappData{
         //   Add your data here / マップごとに保存するデータはここに追加
+        World world;
     }
     static HashMap<Integer,MappData> hashMap = new  HashMap<Integer,MappData>();
 
@@ -59,6 +62,9 @@ public class WeatherMappApp extends MappApp {
         }
         return data;
     }
+
+    static FileConfiguration config = null;
+
     //      ユーザーデータ読み込
     static MappData saveData(int mapId,MappData data){
         return hashMap.put(mapId,data);
@@ -76,12 +82,36 @@ public class WeatherMappApp extends MappApp {
         MappRenderer.init(appName, (String key, int mapId) ->{
             Graphics2D g = MappRenderer.getGraphics(mapId);
 
-
+            Bukkit.getLogger().warning("-------------------------wether init----------- "+mapId);
             g.setColor(Color.black);
             g.fillRect(0,0,128,128);
             g.setColor(Color.red);
             g.drawString(" set in item frame",0,60);
             g.drawString(" touch to start",0,80);
+
+            Bukkit.getLogger().warning("Loading map info "+mapId);
+
+            //   get world from mapid
+            config = MappRenderer.getAppConfig(appName);
+            String worldname  = config.getString("MapID:"+mapId,null);
+            if(worldname == null){
+                Bukkit.getLogger().info("weather:no world name.");
+                return true;
+            }
+            Bukkit.getLogger().info("weather:"+worldname);
+            World world =  Bukkit.getServer().getWorld(worldname);
+
+
+            if(world != null){
+                MappData data = loadData(mapId);
+                data.world = world;
+                //    save app data
+                saveData(mapId,data);
+                Bukkit.getLogger().info("weather:world loaded updating.");
+                MappRenderer.updateMap(appName);
+            }
+
+            Bukkit.getLogger().warning("weather:cant get world "+mapId);
 
             return true;  //  true -> update map / trueでマップに画像が転送されます
         });
@@ -91,28 +121,19 @@ public class WeatherMappApp extends MappApp {
         //      ボタン押された時の処理
         MappRenderer.displayTouchEvent(appName, (String key, int mapId, Player player,int x ,int y) -> {
 
-            ///////////////////////////////////////////////////////////////
-            //      mapごとに別々のデータを表示したい場合は
-            //      mapIdをキーにハッシュマップにデータを読み込み・保存してください
-            /*
-            //     load app data / mapIDをキーにをロードする　
-            MappData data = loadData(mapId);
 
+            //  プレイヤーのワールドを保存
+            MappData data = loadData(mapId);
+            data.world = player.getWorld();
             //    save app data
             saveData(mapId,data);
-            */
 
-            //////////////////////////////////////////////
-            //  Get Graphics context for drawing
-            //  描画用コンテキスト取得
-            Graphics2D g = MappRenderer.getGraphics(mapId);
-            if(g == null){
-                return false;
-            }
+            config = MappRenderer.getAppConfig(appName);
+            //      ワールド情報を保存
+            config.set("MapID:"+mapId,data.world.getName());
+            //      ワールド保存
+            MappRenderer.saveAppConfig(appName,config);
 
-            //  clear screen  　
-
-            w = player.getWorld();
 
             //    true -> call drawing logic / trueで描画ロジックがコールされます
             return true;
@@ -123,23 +144,23 @@ public class WeatherMappApp extends MappApp {
         //     描画ロジックをここに書く
         MappRenderer.draw( appName, drawRefreshCycle, (String key, int mapId,Graphics2D g) -> {
 
-            if (w == null)return false;
-
-            //  Clear screen
-            //  g.setColor(Color.BLACK);
-            //  g.fillRect(0,0,128,128);
+            //    get world by mapId;
+            World w = loadData(mapId).world;
+            if (w == null) {
+                return false;
+            }
 
             if (!w.hasStorm()) {
-                digitalclockDraw(Color.WHITE, g, "mcclock_sunny");
+                digitalclockDraw(w,Color.WHITE, g, "mcclock_sunny");
             }else {
-                digitalclockDraw(Color.WHITE, g, "mcclock_rainy");
+                digitalclockDraw(w,Color.WHITE, g, "mcclock_rainy");
             }
-            //  true -> update map / trueでマップに画像が転送されます
+
             return true;
         });
     }
 
-    public static void digitalclockDraw(Color maincolor, Graphics2D g, String path){
+    public static void digitalclockDraw(World w,Color maincolor, Graphics2D g, String path){
 
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, 128, 128);
