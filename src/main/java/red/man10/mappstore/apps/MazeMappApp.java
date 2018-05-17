@@ -289,7 +289,12 @@ import java.util.Random;
                 m.clickedPlayer.sendMessage("§a§l[MazeMappApp]Click the button to play!");
             }
             m.return_mode = 1;
-            goal(MappAppId);
+            if(goal(MappAppId)){
+                //      give $10
+                MappRenderer.vaultManager.deposit(player.getUniqueId(),10);
+
+            }
+
             return true;
         });
 
@@ -333,7 +338,7 @@ import java.util.Random;
     }
     ////////////
     //ゴール 処理 / goll method
-    static void goal(int MappAppId){
+    static boolean goal(int MappAppId){
         MappAppData m = loadData(MappAppId);
         Graphics2D g = MappRenderer.getGraphics(MappAppId);
         if (m.blocks[m.player_x][m.player_y] == 2 && m.playing_mode == 1) {
@@ -352,7 +357,9 @@ import java.util.Random;
             m.clickedPlayer.sendMessage("§a§l[MazeMappApp]When doing again please click the button!");
 
             m.playing_mode = 0;
+            return true;
         }
+        return false;
     }
 
 }

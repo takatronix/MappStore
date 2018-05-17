@@ -14,7 +14,7 @@ import java.util.UUID;
  * Created by takatronix on 2017/03/04.
  */
 public class VaultManager {
-    public boolean showMessage = false;
+    public boolean showMessage = true;
     private final JavaPlugin plugin;
     public VaultManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -57,7 +57,7 @@ public class VaultManager {
     public void showBalance(UUID uuid){
         OfflinePlayer p = Bukkit.getOfflinePlayer(uuid).getPlayer();
         double money = getBalance(uuid);
-        p.getPlayer().sendMessage(ChatColor.YELLOW + "Your balance$" + money);
+        p.getPlayer().sendMessage(ChatColor.YELLOW + "Your balance: " + balanceString(money));
     }
     /////////////////////////////////////
     //      引き出し
@@ -77,7 +77,7 @@ public class VaultManager {
         if(resp.transactionSuccess()){
             if(p.isOnline()) {
                 if(showMessage) {
-                    p.getPlayer().sendMessage(ChatColor.YELLOW + "$" +  money + " paid");
+                    p.getPlayer().sendMessage(ChatColor.YELLOW + balanceString(money) + " paid");
                 }
             }
             return true;
@@ -101,13 +101,17 @@ public class VaultManager {
         if(resp.transactionSuccess()){
             if(p.isOnline()){
                 if(showMessage){
-                    p.getPlayer().sendMessage("§eYou received" + "$"+ money);
+                    p.getPlayer().sendMessage("§eYou received" + balanceString(money));
 
                 }
             }
             return true;
         }
         return  false;
+    }
+
+    String balanceString(double bal){
+        return String.format("$%,.0f",bal);
     }
 
 }
