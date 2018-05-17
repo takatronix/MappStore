@@ -45,6 +45,8 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         MazeMappApp.register();
         WeatherMappApp.register();
         BalanceMappApp.register();
+        AnalogClockApp.register();
+
     }
 
 
@@ -72,6 +74,7 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
             saveResource("images/mcclock/mcclock_rainy.png",false);
             saveResource("images/mcclock/mcclock_sunny.png",false);
 
+            saveResource("images/analog_clock/analog_clock.png",false);
 
 
 
