@@ -23,6 +23,7 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
 
         getServer().getPluginManager().registerEvents (this,this);
         getCommand("mapp").setExecutor(new MappStoreCommand(this));
+        getCommand("map").setExecutor(new MappStoreCommand(this));
 
 
         saveDefaultConfig();
@@ -43,6 +44,7 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         BallMappApp.register();
         MazeMappApp.register();
         WeatherMappApp.register();
+        BalanceMappApp.register();
     }
 
 

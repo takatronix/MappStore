@@ -10,3 +10,7 @@ commands:
       description: Man10 Minecraft App System
       permission: red.man10.mappstore
       permission-message: You don't have <permission>
+   map:
+      description: Man10 Minecraft App System
+      permission: red.man10.mappstore
+      permission-message: You don't have <permission>

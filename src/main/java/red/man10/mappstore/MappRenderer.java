@@ -65,6 +65,8 @@ public class MappRenderer extends MapRenderer implements Listener {
     public static MappRenderer getInstance() {
         return sharedInstance;
     }
+    public static VaultManager vaultManager;
+
 
     ///////////////////////////////////////////////
     //      描画関数インタフェース
@@ -535,9 +537,11 @@ public class MappRenderer extends MapRenderer implements Listener {
         MappRenderer instance = MappRenderer.getInstance();
         getServer().getPluginManager().registerEvents (instance,plugin);
 
+
         loadImages(plugin);
         setupMaps(plugin);
         MappRenderer.plugin = plugin;
+        vaultManager = new VaultManager(plugin);
     }
 
 
