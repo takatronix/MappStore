@@ -107,6 +107,12 @@ public class BalanceMappApp extends MappApp {
             return true;
         });
 
+        MappRenderer.plateEvent(appName, (String key, int mapId,Player player) -> {
+            Graphics2D g = MappRenderer.getGraphics(mapId);
+            showBalance(g,player);
+
+                return true;
+        });
         /////////////////////////////////////////////////
         //      Display touch event
         //      ディスプレイがタッチされた時の処理
@@ -120,32 +126,39 @@ public class BalanceMappApp extends MappApp {
                 return false;
             }
 
-            g.setColor(Color.BLACK);
-            g.fillRect(0,0,128,128);
-
-
-
-            //      残高を得る
-            double balance = MappRenderer.vaultManager.getBalance(player.getUniqueId());
-
-            g.setColor(Color.RED);
-
-            g.setFont(new Font( "SansSerif", Font.BOLD,12));
-            g.drawString("Your balance:",10,40);
-
-
-            g.setColor(Color.YELLOW);
-            g.setFont(new Font( "SansSerif", Font.PLAIN,10));
-            g.drawString(String.format("$%,.0f",balance),10,60);
-
-
-            g.setColor(Color.blue);
-            g.drawString(" "+ player.getName(),10,80);
+            showBalance(g,player);
 
             //    true -> call drawing logic :描画更新
             return true;
         });
 
+
+
+
+    }
+
+    public static void showBalance( Graphics2D g,Player player){
+        g.setColor(Color.BLACK);
+        g.fillRect(0,0,128,128);
+
+
+
+        //      残高を得る
+        double balance = MappRenderer.vaultManager.getBalance(player.getUniqueId());
+
+        g.setColor(Color.RED);
+
+        g.setFont(new Font( "SansSerif", Font.BOLD,12));
+        g.drawString("Your balance:",10,40);
+
+
+        g.setColor(Color.YELLOW);
+        g.setFont(new Font( "SansSerif", Font.PLAIN,10));
+        g.drawString(String.format("$%,.0f",balance),10,60);
+
+
+        g.setColor(Color.blue);
+        g.drawString(" "+ player.getName(),10,80);
 
     }
 

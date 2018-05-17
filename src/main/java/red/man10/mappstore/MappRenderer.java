@@ -84,6 +84,12 @@ public class MappRenderer extends MapRenderer implements Listener {
     public interface ButtonClickFunction{
         boolean onButtonClicked(String key,int mapId,Player player);
     }
+    //      ボタンクリックイベント
+    @FunctionalInterface
+    public interface PlatePushFunction{
+        boolean onPlatePush(String key,int mapId,Player player);
+    }
+
 
     //      ジャンプイベント（プレイヤーがマップを持ってジャンプした)
     @FunctionalInterface
@@ -230,6 +236,13 @@ public class MappRenderer extends MapRenderer implements Listener {
     public static void buttonEvent(String key,ButtonClickFunction func){
         buttonFunctions.put(key,func);
     }
+
+    //    plateイベントを追加
+    static HashMap<String,PlatePushFunction> plateFunctions = new HashMap<>();
+    public static void plateEvent(String key,PlatePushFunction func){
+        plateFunctions.put(key,func);
+    }
+
 
     //     タッチイベントを追加
     public static void displayTouchEvent(String key,DisplayTouchFunction func){
@@ -460,6 +473,57 @@ public class MappRenderer extends MapRenderer implements Listener {
     //      ボタンイベントを検出する
     static public int onPlayerInteractEvent(PlayerInteractEvent e){
 
+
+
+        Block clickedBlock = e.getClickedBlock();
+        Location loc = clickedBlock.getLocation();
+
+        /////////////////////////////////////////////////////
+        //      プレートを踏んだ
+        if(clickedBlock.getType()== Material.STONE_PLATE
+                || clickedBlock.getType()== Material.GOLD_PLATE
+                || clickedBlock.getType()== Material.IRON_PLATE
+                ){
+
+            // Bukkit.getLogger().info("踏んだ ");
+
+             Collection<Entity> entities = getNearbyEntities(loc,2);
+
+
+            for (Entity en : entities) {
+                //     アイテムフレーム以外は無視
+                if (en instanceof ItemFrame != true) {
+                    continue;
+                }
+                //     アイテムフレームにあるのはマップか？
+                ItemFrame frame = (ItemFrame) en;
+                ItemStack item = frame.getItem();
+                if(item.getType() != Material.MAP) {
+                    continue;
+                }
+
+                //      DurabilityにいれてあるのがマップID
+                int mapId = (int)item.getDurability();
+                String key = findKey(mapId);
+                if(key == null){
+                    continue;
+                }
+
+
+                //      ボタン用メソッドをコール
+                PlatePushFunction func = plateFunctions.get(key);
+                if(func != null){
+                    Bukkit.getLogger().info("プレートが踏まれた => map key = "+key);
+                    if(func.onPlatePush(key,mapId,e.getPlayer())){
+                        refresh(key);
+                    }
+                }
+            }
+
+
+            return -1;
+        }
+
         //      右ボタン以外は無視
         if(e.getAction()!=Action.RIGHT_CLICK_BLOCK) {
             return  -1;
@@ -469,9 +533,17 @@ public class MappRenderer extends MapRenderer implements Listener {
             return -1;
         }
 
-        Block clickedBlock = e.getClickedBlock();
-        Location loc = clickedBlock.getLocation();
-        if(clickedBlock.getType()== Material.WOOD_BUTTON || clickedBlock.getType()== Material.STONE_BUTTON) {
+
+        if(     clickedBlock.getType()== Material.WOOD_BUTTON
+                || clickedBlock.getType()== Material.STONE_BUTTON
+                /*
+                ||   clickedBlock.getType()== Material.STONE_PLATE
+                || clickedBlock.getType()== Material.GOLD_PLATE
+                || clickedBlock.getType()== Material.IRON_PLATE
+*/
+                ) {
+
+
 
             //     クリックしたボタンの近くのエンティティを集める
             Collection<Entity> entities = getNearbyEntities(loc,1);

@@ -155,7 +155,13 @@ public class YourMappApp extends MappApp {
         });
 
 
-        /////////////////////////////////////////////////////////////////////////////
+        MappRenderer.plateEvent(appName, (String key, int mapId,Player player) -> {
+
+            return true;
+        });
+
+
+            /////////////////////////////////////////////////////////////////////////////
         //      Events when player have the mapapp in main hand
         //      マップをメインハンドにもった状態のイベント
         /////////////////////////////////////////////////////////////////////////////
