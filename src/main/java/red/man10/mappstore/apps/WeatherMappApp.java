@@ -81,7 +81,7 @@ public class WeatherMappApp extends MappApp {
             g.fillRect(0,0,128,128);
             g.setColor(Color.red);
             g.drawString(" set in item frame",0,60);
-            g.drawString(" press the button",0,80);
+            g.drawString(" touch to start",0,80);
 
             return true;  //  true -> update map / trueでマップに画像が転送されます
         });
@@ -89,7 +89,7 @@ public class WeatherMappApp extends MappApp {
         /////////////////////////////////////////////////
         //      Button (nearby map) clicked event
         //      ボタン押された時の処理
-        MappRenderer.buttonEvent(appName, (String key, int mapId, Player player) -> {
+        MappRenderer.displayTouchEvent(appName, (String key, int mapId, Player player,int x ,int y) -> {
 
             ///////////////////////////////////////////////////////////////
             //      mapごとに別々のデータを表示したい場合は

@@ -41,7 +41,7 @@ public class AnalogClockApp extends MappApp {
     ////////////////////////////////////////////
     //     Draw refresh Cycle:描画割り込み周期
     //     appTickCycle = 1 -> 1/20 sec
-    static int  drawRefreshCycle = 20;
+    static int  drawRefreshCycle = 20*60;
 
 
 
@@ -65,8 +65,8 @@ public class AnalogClockApp extends MappApp {
         String minutes = formattedTimestamp(current(), "mm");
         String seconds = formattedTimestamp(current(), "ss");
 
-        int x1 = getX(50, seconds, 6);
-        int y1 = getY(50, seconds, 6);
+     //   int x1 = getX(50, seconds, 6);
+     //   int y1 = getY(50, seconds, 6);
 
         int x2 = getX(50, minutes, 6);
         int y2 = getY(50, minutes, 6);
@@ -82,7 +82,7 @@ public class AnalogClockApp extends MappApp {
         BasicStroke wideStroke;
 
         g.setColor(maincolor);
-        g.drawLine(64, 64, x1, y1);
+    //    g.drawLine(64, 64, x1, y1);
         wideStroke = new BasicStroke(3.0f);
         g.setStroke(wideStroke);
         g.drawLine(64, 64, x2, y2);
