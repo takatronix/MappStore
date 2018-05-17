@@ -82,36 +82,27 @@ public class WeatherMappApp extends MappApp {
         MappRenderer.init(appName, (String key, int mapId) ->{
             Graphics2D g = MappRenderer.getGraphics(mapId);
 
-            Bukkit.getLogger().warning("-------------------------wether init----------- "+mapId);
             g.setColor(Color.black);
             g.fillRect(0,0,128,128);
             g.setColor(Color.red);
             g.drawString(" set in item frame",0,60);
             g.drawString(" touch to start",0,80);
 
-            Bukkit.getLogger().warning("Loading map info "+mapId);
-
-            //   get world from mapid
             config = MappRenderer.getAppConfig(appName);
             String worldname  = config.getString("MapID:"+mapId,null);
             if(worldname == null){
                 Bukkit.getLogger().info("weather:no world name.");
                 return true;
             }
-            Bukkit.getLogger().info("weather:"+worldname);
+
             World world =  Bukkit.getServer().getWorld(worldname);
-
-
             if(world != null){
                 MappData data = loadData(mapId);
                 data.world = world;
                 //    save app data
                 saveData(mapId,data);
-                Bukkit.getLogger().info("weather:world loaded updating.");
                 MappRenderer.updateMap(appName);
             }
-
-            Bukkit.getLogger().warning("weather:cant get world "+mapId);
 
             return true;  //  true -> update map / trueでマップに画像が転送されます
         });
