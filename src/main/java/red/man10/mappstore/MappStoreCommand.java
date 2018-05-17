@@ -28,6 +28,12 @@ public class MappStoreCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
+        if((sender instanceof Player) == false) {
+            sender.sendMessage("Can't use in console.");
+            return false;
+        }
+
+
         Player p = (Player) sender;
 
         if(args.length == 0){
