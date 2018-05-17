@@ -39,7 +39,25 @@ public class VaultManager {
         return economy != null;
     }
 
-    /////////////////////////////////////
+
+    public boolean canUseVault() {
+        if(economy != null){
+            return true;
+        }
+        return false;
+    }
+
+    ///////////////////////////    public boolean canUseVault() {
+    //        if(economy != null){
+    //            return true;
+    //        }
+    //        return false;
+    //    }    public boolean canUseVault() {
+    //        if(economy != null){
+    //            return true;
+    //        }
+    //        return false;
+    //    }//////////
     //      残高確認
     /////////////////////////////////////
     public double  getBalance(UUID uuid){

@@ -3,6 +3,7 @@ package red.man10.mappstore.apps;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.map.MapRenderer;
 import red.man10.mappstore.MappRenderer;
 import red.man10.mappstore.MappApp;
 import java.awt.*;
@@ -50,6 +51,15 @@ public class BalanceMappApp extends MappApp {
             g.fillRect(0,0,128,128);
 
             g.setColor(Color.RED);
+
+
+            if(MappRenderer.vaultManager.canUseVault() == false){
+                g.drawString("No Vault API",0,60);
+                return true;
+            }
+
+
+
             g.drawString("Set map in item frame",0,60);
             g.drawString("   Touch to start",0,80);
 
