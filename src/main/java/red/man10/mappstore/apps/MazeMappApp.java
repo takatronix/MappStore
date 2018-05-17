@@ -357,7 +357,7 @@ import java.util.Random;
             w.playSound(m.clickedPlayer.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 4, 1);
             //メッセージ / sendMessage
             m.clickedPlayer.sendMessage("§a§l[MazeMappApp]GOAL! congratulations!");
-            m.clickedPlayer.sendMessage("§a§l[MazeMappApp]When doing again please click the button!");
+            m.clickedPlayer.sendMessage("§a§l[MazeMappApp]Please click the button!");
 
             m.playing_mode = 0;
             return true;
