@@ -491,7 +491,9 @@ public class MappRenderer extends MapRenderer implements Listener {
             // Bukkit.getLogger().info("踏んだ ");
 
              Collection<Entity> entities = getNearbyEntities(loc,2);
-
+             if(e.getPlayer() == null){
+                 return -1;
+             }
 
             for (Entity en : entities) {
                 //     アイテムフレーム以外は無視
