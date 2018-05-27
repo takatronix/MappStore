@@ -145,6 +145,9 @@ public class MappRenderer extends MapRenderer implements Listener {
 
 
 
+
+
+
         Boolean isSneaking = player.isSneaking();
 
 
@@ -160,6 +163,16 @@ public class MappRenderer extends MapRenderer implements Listener {
         }
 
     }
+
+
+    //      マウスカーソル情報
+    static class Cursor{
+        int x;
+        int y;
+        boolean show;
+    }
+    static HashMap<Integer,Cursor> mouseCursor = new HashMap<>();
+
 
     static HashMap<Player,Vector> userMovingVec = new HashMap<>();
 
@@ -362,6 +375,9 @@ public class MappRenderer extends MapRenderer implements Listener {
             }
             updateCount++;
         }
+
+
+
 
         renderCount++;
     }
@@ -895,6 +911,33 @@ public class MappRenderer extends MapRenderer implements Listener {
 
                 lastYawMap.put(p,(Double)velocity);
             }
+
+
+            ////////////////////////////////////////
+            //      マウスカーソル処理
+            ////////////////////////////////////////
+            Cursor cur = mouseCursor.get(mapID);
+            if(cur != null){
+                if(cur.show){
+                    cur.x += velocity;
+                    cur.y += pitchVelocity;
+
+                    if(cur.x < 0){
+                        cur.x = 0;
+                    }
+                    if(cur.y < 0){
+                        cur.y = 0;
+                    }
+                    if(cur.x > 127){
+                        cur.x = 127;
+                    }
+                    if(cur.y > 127){
+                        cur.y = 127;
+                    }
+
+                }
+            }
+
         }
 
         //      マップごとのTick処理
@@ -1009,5 +1052,30 @@ public class MappRenderer extends MapRenderer implements Listener {
     //      キャッシュからイメージ取りだし
     static BufferedImage image(String  key){
         return imageMap.get(key);
+    }
+
+    /////////////////////////////////////////////
+    static public void showCursor(int mapId){
+
+        Cursor cur = mouseCursor.get(mapId);
+        if(cur == null){
+            cur = new Cursor();
+            cur.x = 64;
+            cur.y = 64;
+        }
+        cur.show = true;
+        mouseCursor.put(mapId,cur);
+
+    }
+    static public void hideCursor(int mapId){
+        Cursor cur = mouseCursor.get(mapId);
+        if(cur == null){
+            cur = new Cursor();
+
+        }
+        cur.show = false;
+        mouseCursor.put(mapId,cur);
+
+
     }
 }

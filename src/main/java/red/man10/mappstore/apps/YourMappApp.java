@@ -161,15 +161,13 @@ public class YourMappApp extends MappApp {
         });
 
 
-            /////////////////////////////////////////////////////////////////////////////
-        //      Events when player have the mapapp in main hand
-        //      マップをメインハンドにもった状態のイベント
-        /////////////////////////////////////////////////////////////////////////////
 
         ////////////////////////////////////
         //      Jump  /　ジャンプ
         MappRenderer.playerJumpEvent(appName,(String key,int mapId,Player player) ->{
 
+            player.sendMessage("showCursor");
+            MappRenderer.showCursor(mapId);
             //    true -> call drawing logic :描画更新
             return true;
         });
@@ -178,6 +176,11 @@ public class YourMappApp extends MappApp {
         //      Sneak  /　スニーク
         MappRenderer.playerSneakEvent(appName,(String key,int mapId,Player player,boolean isSneaking) ->{
 
+            if(isSneaking){
+                MappRenderer.showCursor(mapId);
+            }else{
+
+            }
             return true; //    true -> call drawing logic :描画更新
         });
 

@@ -47,6 +47,10 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         WeatherMappApp.register();
         BalanceMappApp.register();
         AnalogClockApp.register();
+        PianoMappApp.register();
+        BreakoutApp.register();
+
+
 
         //      call init
         MappRenderer.initAllMaps();
@@ -71,6 +75,10 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
 
 
             saveResource("images/monsterball.png",false);
+            saveResource("images/cursor.png",false);
+            saveResource("images/piano.png",false);
+
+
             saveResource("images/maze/maze_goal.png",false);
             saveResource("images/maze/maze_player.png",false);
             saveResource("images/maze/maze_button.png",false);
@@ -82,6 +90,8 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
 
             saveResource("images/analog_clock/analog_clock.png",false);
 
+            saveResource("images/breakout/breakout_background.png",false);
+            saveResource("images/breakout/breakout_logo.png",false);
 
 
         }

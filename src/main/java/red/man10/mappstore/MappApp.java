@@ -14,7 +14,9 @@ public class MappApp {
 
     static public void register(){}
 
+    static void showCursor(){
 
+    }
 
 
 }
