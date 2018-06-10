@@ -94,8 +94,9 @@ public class BreakoutApp {
         MappRenderer.init(appName, (String key, int mapId) -> {
             //      Configファイルに保存する
             for(int i=1;i!=6;i++) {
-                if (config.getInt("ranking.score." + i) <= 0) {
-                    config.set("ranking.score." + i, 1);
+                if (config.getString("ranking.mcid." + i)==null || config.getString("ranking.mcid." + i).isEmpty()) {
+                    config.set("ranking.score." + i, 0);
+                    config.set("ranking.mcid." + i,"No record" );
                 }
             }
             MappRenderer.saveAppConfig(appName, config);
@@ -166,47 +167,47 @@ public class BreakoutApp {
                 BreakoutApp.drawStage(mapId);
                 ////////////////////////////////
                 //Single score mode / 1人用ゲームモード
-                    for (int i = 0; i != m.ball_amount; i++) {
+                for (int i = 0; i != m.ball_amount; i++) {
 
-                        //下のバー / down ber
-                        g.setColor(Color.WHITE);
-                        g.fillRect(m.x_player[0], m.y_player[0], m.size_player[0], 3);
+                    //下のバー / down ber
+                    g.setColor(Color.WHITE);
+                    g.fillRect(m.x_player[0], m.y_player[0], m.size_player[0], 3);
 
-                        m.size_player[0]=8+(56-m.break_amount)/2;
-                        //hit event
-                        BreakoutApp.hit(mapId);
-                        ///////////////////////////
-                        //ball vector / ベクトル計算
-                        if((int)m.game_time/20<=199) {
-                            m.y_ball[i] = m.y_ball[i] + m.y_vector[i];
-                            m.x_ball[i] = m.x_ball[i] + m.x_vector[i];
-                        }
-                        /////////////////////////////
-                        //draw ball / 球を表示
-                        g.setColor(Color.WHITE);
-                        g.fillRect(m.x_ball[i] + 1, m.y_ball[i], 2, 4);
-                        g.fillRect(m.x_ball[i], m.y_ball[i] + 1, 4, 2);
-                        /////////////
-                        //draw stats
-
-                        //time
-                        g.setColor(Color.MAGENTA);
-                        g.setFont(new Font( "SansSerif", Font.PLAIN,10));
-                        MappDraw.drawOutlineString(g,"TIME: "+(int)m.game_time/20,Color.white,Color.black,2,10);
-                        //combo
-                        MappDraw.drawOutlineString(g,"COMBO: "+m.break_combo,Color.white,Color.black,50,10);
-
-                        //Finish
-                        if(m.break_amount>=56 || m.y_ball[i]>=130 || m.game_time==-1){
-                            if (m.break_comboMax<m.break_combo){
-                                m.break_comboMax=m.break_combo;
-                                Bukkit.broadcastMessage(""+m.break_comboMax);
-                            }
-                            m.break_combo=0;
-
-                            BreakoutApp.gameFinish(mapId);
-                        }
+                    m.size_player[0]=8+(56-m.break_amount)/2;
+                    //hit event
+                    BreakoutApp.hit(mapId);
+                    ///////////////////////////
+                    //ball vector / ベクトル計算
+                    if((int)m.game_time/20<=199) {
+                        m.y_ball[i] = m.y_ball[i] + m.y_vector[i];
+                        m.x_ball[i] = m.x_ball[i] + m.x_vector[i];
                     }
+                    /////////////////////////////
+                    //draw ball / 球を表示
+                    g.setColor(Color.WHITE);
+                    g.fillRect(m.x_ball[i] + 1, m.y_ball[i], 2, 4);
+                    g.fillRect(m.x_ball[i], m.y_ball[i] + 1, 4, 2);
+                    /////////////
+                    //draw stats
+
+                    //time
+                    g.setColor(Color.MAGENTA);
+                    g.setFont(new Font( "SansSerif", Font.PLAIN,10));
+                    MappDraw.drawOutlineString(g,"TIME: "+(int)m.game_time/20,Color.white,Color.black,2,10);
+                    //combo
+                    MappDraw.drawOutlineString(g,"COMBO: "+m.break_combo,Color.white,Color.black,50,10);
+
+                    //Finish
+                    if(m.break_amount>=56 || m.y_ball[i]>=130 || m.game_time==-1){
+                        if (m.break_comboMax<m.break_combo){
+                            m.break_comboMax=m.break_combo;
+                            Bukkit.broadcastMessage(""+m.break_comboMax);
+                        }
+                        m.break_combo=0;
+
+                        BreakoutApp.gameFinish(mapId);
+                    }
+                }
             }
             if(m.game_mode==3){
                 //  Clear screen (画面消去)
@@ -269,7 +270,7 @@ public class BreakoutApp {
                         w = m.playing_player.getWorld();//sounds
                         w.playSound(m.playing_player.getLocation(), Sound.UI_BUTTON_CLICK, 4, 2);
                 }
-            //game_mode=Finished game / ゲームが終わった時でのスニークの処理
+                //game_mode=Finished game / ゲームが終わった時でのスニークの処理
             }if(m.game_mode==2) {
                 m.game_mode=0;
                 World w = m.playing_player.getWorld();//sounds
@@ -494,15 +495,15 @@ public class BreakoutApp {
         //////////////////////////////
         //Player data reset / プレイヤー情報リセット
         for(int i=0;i!=m.ball_amount;i++) {
-                m.size_player[0] = 32;
-                m.x_player[0] = 64 - m.size_player[0] / 2;
-                m.y_player[0] = 110;
+            m.size_player[0] = 32;
+            m.x_player[0] = 64 - m.size_player[0] / 2;
+            m.y_player[0] = 110;
 
-                m.x_vector[i] = new Random().nextInt(8) - 4;
-                m.y_vector[i] = -2;
+            m.x_vector[i] = new Random().nextInt(8) - 4;
+            m.y_vector[i] = -2;
 
-                m.x_ball[i] = 64;
-                m.y_ball[i] = 105;
+            m.x_ball[i] = 64;
+            m.y_ball[i] = 105;
         }
         //reset variable / リセット変数
         m.game_mode=1;
@@ -563,12 +564,12 @@ public class BreakoutApp {
                 //////////////////////////////////
                 //New record notice / 新記録時の通知
                 String th="th";
-                    switch (i){
-                        case 1: th="st";break;
-                        case 2: th="nd";break;
-                        case 3: th="rd";break;
-                        default:th="th";break;
-                    }
+                switch (i){
+                    case 1: th="st";break;
+                    case 2: th="nd";break;
+                    case 3: th="rd";break;
+                    default:th="th";break;
+                }
                 Bukkit.broadcastMessage("§e§l[BreakOut]§6§lNew record!§e§l"+m.playing_player.getName()+" §e§lscore:"+player_score+" §egot§l "+i+th+"");
                 break;
             }

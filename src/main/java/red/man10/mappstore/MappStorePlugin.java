@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import red.man10.mappstore.apps.*;
@@ -49,6 +50,7 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         AnalogClockApp.register();
         PianoMappApp.register();
         BreakoutApp.register();
+        CalcApp.register();
 
 
 
@@ -112,6 +114,26 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         MappRenderer.updateAll();
         return true;
     }
+
+    public boolean sendMap(Player p, String mapIDString){
+
+        int mapID = Integer.parseInt(mapIDString);
+
+        //     mapIDから新規にマップを作成する
+        MapView map = Bukkit.getMap((short) mapID);
+        if (map == null) {
+            p.sendMessage("Map not found");
+            map = Bukkit.createMap(Bukkit.getWorlds().get(0));
+        }else{
+            p.sendMessage("Map found");
+        }
+
+
+        p.sendMap(map);
+
+        return true;
+    }
+
 
     //      show List
     public boolean showList(Player p){

@@ -43,6 +43,16 @@ public class MappStoreCommand implements CommandExecutor {
 
         String command = args[0];
 
+        if(command.equalsIgnoreCase("send")) {
+            if (args.length == 2) {
+                plugin.sendMap(p,args[1]);
+                return true;
+            }
+
+            p.sendMessage("/mapp send [mapid]");
+            return false;
+        }
+
         if(command.equalsIgnoreCase("get")){
             if(!p.hasPermission(getPermision)){
                 p.sendMessage(permissionErrorString);
