@@ -30,9 +30,7 @@ import java.util.HashMap;
 //          https://github.com/Ryotackey
 /////////////////////////////////////////////////////////
 
-public class WeatherMappApp extends MappApp {
-
-    //static World w;
+public class WeatherApp extends MappApp {
 
     ////////////////////////////////////////////
     //      App name (must be unique)

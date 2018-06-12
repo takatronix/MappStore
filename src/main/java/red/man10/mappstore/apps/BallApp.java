@@ -1,8 +1,6 @@
 package red.man10.mappstore.apps;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
 import red.man10.mappstore.MappDraw;
 import red.man10.mappstore.MappRenderer;
 import red.man10.mappstore.MappApp;
@@ -10,7 +8,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.Vector;
 
 /////////////////////////////////////////////////////////
 //          mApp default template
@@ -19,9 +16,7 @@ import java.util.Vector;
 //     Please give me pull request your mApp!
 /////////////////////////////////////////////////////////
 
-
-
-public class BallMappApp extends MappApp {
+public class BallApp extends MappApp {
 
     static int hit = 0;
 

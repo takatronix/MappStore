@@ -10,7 +10,7 @@ import java.awt.*;
 //
 /////////////////////////////////////////////////////////
 
-public class DrawMappApp extends MappApp {
+public class DrawApp extends MappApp {
 
     class DrawData{
         int x;

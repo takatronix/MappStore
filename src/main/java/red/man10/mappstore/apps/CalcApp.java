@@ -9,15 +9,17 @@ import java.util.HashMap;
 
 
 public class CalcApp extends MappApp{
-    static int  drawRefreshCycle = 0;
+    static final int  drawRefreshCycle = 0;
     static final String appName = "calc";
+    static final String chatMassage = "§2§l[calculator]";
 
 
      static class CalcMappData{
          boolean operator;//演算子を使うかどうか
-         long result;//計算結果
-         long addNumber;//追加する値
+         double result;//計算結果
+         double addNumber;//追加する値
          String addNumber2 = "0";//追加する値2
+         String ope = "";
          boolean plus;//和
          boolean minus;//差
          boolean power;//積
@@ -48,8 +50,13 @@ public class CalcApp extends MappApp{
             CalcMappData data = loadData(mapId);
 
 
-            g.setColor(Color.WHITE);
+            g.setColor(Color.lightGray);
             g.fillRect(0,0,128,128);
+            g.setColor(Color.BLACK);
+            g.fillRect(0,0,2,128);
+            g.fillRect(126,0,2,128);
+            g.fillRect(0,125,128,3);
+
             if (!data.operator){
                 keyNumber(g);//テンキー
 
@@ -59,13 +66,20 @@ public class CalcApp extends MappApp{
 
             }
             g.setColor(Color.BLACK);
+            g.fillRect(0,0,128,12);
+
+            g.setColor(Color.WHITE);
             g.setFont(new Font( "SansSerif", Font.BOLD ,10));
+
             if (data.resultNumber){
-                g.drawString("result:"+data.result,10,10);
+                String put = Double.toString(data.result);
+                g.drawString("result:"+put,10,10);
 
             }else {
                 g.drawString(data.addNumber2,10,10);
             }
+
+            g.drawString(data.ope,90,10);
 
             return true;
         });
@@ -97,7 +111,7 @@ public class CalcApp extends MappApp{
     }
 
 
-    private static void calc(int mapId,long number,Player player){
+    private static void calc(int mapId,double number,Player player){
         CalcMappData data = loadData(mapId);
         if(data.plus){
             data.result+=number;
@@ -113,7 +127,8 @@ public class CalcApp extends MappApp{
         }
         if (data.division){
             if (number==0){
-                player.sendMessage("§2§l[calculator]§40で割ることはできません 計算をスルーします");
+                player.sendMessage(chatMassage+"§40で割ることはできません 計算をスルーします");
+                player.sendMessage(chatMassage+"§4Division by 0 is not possible.");
                 data.division = false;
                 data.operator = false;
                 return;
@@ -125,7 +140,10 @@ public class CalcApp extends MappApp{
         data.addNumber = 0;
         data.addNumber2 = "0";
         data.calc = false;
-        player.sendMessage("結果："+data.result);
+        data.ope = "";
+
+        player.sendMessage(chatMassage+"§3結果："+data.result);
+        player.sendMessage(chatMassage+"§3Result:"+data.result);
 
         //      Save Data
         saveData(mapId,data);
@@ -156,35 +174,33 @@ public class CalcApp extends MappApp{
     private static void touchKey(int mapId,int x,int y,Player player){
         CalcMappData data = loadData(mapId);
         if (data.operator){
-            if(x<64&&y>14&&y<52){
-                player.sendMessage("+");
+            if(x<64&&y>14&&y<52){//plus
                 data.plus = true;
                 data.calc = true;
+                data.ope = "+";
             }
-            if(x<64&&y>54&&y<92){
-                player.sendMessage("-");
+            if(x<64&&y>54&&y<92){//minus
                 data.minus = true;
                 data.calc = true;
+                data.ope = "-";
 
             }
-            if(x>64&&y>14&&y<52){
-                player.sendMessage("x");
+            if(x>64&&y>14&&y<52){//power
                 data.power = true;
                 data.calc = true;
+                data.ope = "x";
 
             }
-            if(x>64&&y>54&&y<92){
-                player.sendMessage("÷");
+            if(x>64&&y>54&&y<92){//division
                 data.division = true;
                 data.calc = true;
+                data.ope = "/";
             }
-            if (x>14&&x<64&&y>96){
-                player.sendMessage("=");
+            if (x>14&&x<64&&y>96){//equal
                 data.resultNumber = true;
             }
 
             if (x>65&&y>96){//Cancel
-                player.sendMessage("cancel");
             }
             data.operator = false;
 
@@ -193,55 +209,69 @@ public class CalcApp extends MappApp{
 
         }
         if (!data.operator) {
-            if (x > 13 && x < 46 && y > 14 && y < 32) {
-                player.sendMessage("backspace");
+
+            if (data.addNumber2 =="0"){
+                data.addNumber2 ="";
+            }
+
+            if (x > 13 && x < 46 && y > 14 && y < 32) {//Backspace
+
                 try {
                     data.addNumber2 = data.addNumber2.substring(0, data.addNumber2.length() - 1);
+
                 }catch (java.lang.StringIndexOutOfBoundsException e){
-                    player.sendMessage("§l§4エラー：値はありません");
+                    player.sendMessage(chatMassage+"§4エラー：値はありません");
+                    player.sendMessage(chatMassage+"§4Error:There is no value.");
                 }
+
             }
-            if (x > 13 && x < 46 && y > 34 && y < 52) {
-                player.sendMessage("1");
+            if (x > 13 && x < 46 && y > 34 && y < 52) {//1
                 data.addNumber2 += 1;
             }
-            if (x > 13 && x < 46 && y > 54 && y < 72) {
-                player.sendMessage("4");
+            if (x > 13 && x < 46 && y > 54 && y < 72) {//4
                 data.addNumber2 += 4;
 
             }
-            if (x > 13 && x < 46 && y > 74 && y < 92) {
-                player.sendMessage("7");
+            if (x > 13 && x < 46 && y > 74 && y < 92) {//7
                 data.addNumber2 += 7;
 
             }
-            if (x > 13 && x < 46 && y > 94 && y < 112) {
-                player.sendMessage("0");
+            if (x > 13 && x < 46 && y > 94 && y < 112) {//0
                 data.addNumber2 += 0;
             }
-            //2列目
-            if (x > 50 && x < 80 && y > 14 && y < 32) {
-                player.sendMessage("delete");
+            //2
+            if (x > 50 && x < 80 && y > 14 && y < 32) {//Delete
+                player.sendMessage(chatMassage+"§3数字をすべて削除しました");
+                player.sendMessage(chatMassage+"§3Deleted all value.");
                 data.addNumber2 = "0";
                 data.result = 0;
                 data.calc = false;
                 data.resultNumber = false;
+                data.division = false;
+                data.ope = "";
+                data.minus = false;
+                data.plus = false;
+                data.power = false;
+                data.operator = false;
             }
-            if (x > 50 && x < 80 && y > 34 && y < 52) {
-                player.sendMessage("2");
+            if (x > 50 && x < 80 && y > 34 && y < 52) {//2
                 data.addNumber2 += 2;
             }
-            if (x > 50 && x < 80 && y > 54 && y < 72) {
-                player.sendMessage("5");
+            if (x > 50 && x < 80 && y > 54 && y < 72) {//5
                 data.addNumber2 += 5;
             }
-            if (x > 50 && x < 80 && y > 74 && y < 92) {
-                player.sendMessage("8");
+            if (x > 50 && x < 80 && y > 74 && y < 92) {//8
                 data.addNumber2 += 8;
             }
-            if (x > 50 && x < 80 && y > 94 && y < 112) {
-                data.addNumber = Long.parseLong(data.addNumber2);
-                player.sendMessage("計算");
+            if (x > 50 && x < 80 && y > 94 && y < 112) {//calc
+
+                if (data.addNumber2 ==""||data.addNumber2 ==null){
+                    data.addNumber2 ="0";
+                    return;
+                }
+                data.addNumber = Double.parseDouble(data.addNumber2);
+
+
                 if (data.calc) {
                     calc(mapId,data.addNumber, player);
                 }
@@ -254,32 +284,37 @@ public class CalcApp extends MappApp{
 
                 return;
             }
-            //3列目
-            if (x > 84 && x < 112 && y > 14 && y < 32) {
-                player.sendMessage("result");
+            //3
+            if (x > 84 && x < 112 && y > 14 && y < 32) {//result
                 data.resultNumber = !data.resultNumber;
+                if (data.addNumber2 == ""){
+                    data.addNumber2 ="0";
+                }
             }
-            if (x > 84 && x < 112 && y > 34 && y < 52) {
-                player.sendMessage("3");
+            if (x > 84 && x < 112 && y > 34 && y < 52) {//3
                 data.addNumber2+=3;
             }
-            if (x > 84 && x < 112 && y > 54 && y < 72) {
-                player.sendMessage("6");
+            if (x > 84 && x < 112 && y > 54 && y < 72) {//6
                 data.addNumber2+=6;
             }
-            if (x > 84 && x < 112 && y > 74 && y < 92) {
-                player.sendMessage("9");
+            if (x > 84 && x < 112 && y > 74 && y < 92) {//9
                 data.addNumber2+=9;
             }
-            if (x > 84 && x < 112 && y > 94 && y < 112) {
-                player.sendMessage("=");
-                data.addNumber = Long.parseLong(data.addNumber2);
+            if (x > 84 && x < 112 && y > 94 && y < 112) {//equal
+                if (data.addNumber2 ==""||data.addNumber2 ==null){
+                    data.addNumber2 ="0";
+                    return;
+                }
+
+                data.addNumber = Double.parseDouble(data.addNumber2);
                 calc(mapId,data.addNumber,player);
                 data.resultNumber = true;
 
             }
-
-            saveData(mapId,data);
+            if (data.addNumber2.length() == 0) {
+                data.addNumber2 = "0";
+            }
+                saveData(mapId,data);
 
         }
 

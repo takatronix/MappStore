@@ -1,13 +1,9 @@
 package red.man10.mappstore.apps;
 
-
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.map.MapRenderer;
 import red.man10.mappstore.MappRenderer;
 import red.man10.mappstore.MappApp;
 import java.awt.*;
-import java.util.HashMap;
 
 /////////////////////////////////////////////////////////
 //          mApp default template
@@ -17,7 +13,7 @@ import java.util.HashMap;
 /////////////////////////////////////////////////////////
 
 
-public class BalanceMappApp extends MappApp {
+public class BalanceApp extends MappApp {
 
 
     ////////////////////////////////////////////

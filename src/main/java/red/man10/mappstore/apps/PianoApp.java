@@ -19,7 +19,7 @@ import java.util.HashMap;
 
 
 
-public class PianoMappApp extends MappApp {
+public class PianoApp extends MappApp {
 
 
     ////////////////////////////////////////////
@@ -68,16 +68,6 @@ public class PianoMappApp extends MappApp {
         //      ボタン押された時の処理
 
         MappRenderer.buttonEvent(appName, (String key, int mapId, Player player) -> {
-            ///////////////////////////////////////////////////////////////
-            //      mapごとに別々のデータを表示したい場合は
-            //      mapIdをキーにハッシュマップにデータを読み込み・保存してください
-            /*
-            //     load app data / mapIDをキーにをロードする　
-            MappData data = loadData(mapId);
-
-            //    save app data
-            saveData(mapId,data);
-            */
 
             //////////////////////////////////////////////
             //  Get Graphics context for drawing
@@ -164,7 +154,6 @@ public class PianoMappApp extends MappApp {
         //     描画ロジックをここに書く
         MappRenderer.draw( appName, drawRefreshCycle, (String key, int mapId,Graphics2D g) -> {
 
-//              Clear screen
             g.setColor(Color.WHITE);
             g.fillRect(0,0,128,128);
 

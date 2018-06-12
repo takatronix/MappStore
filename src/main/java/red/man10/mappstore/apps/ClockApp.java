@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 //
 /////////////////////////////////////////////////////////
 
-public class ClockMappApp extends MappApp {
+public class ClockApp extends MappApp {
 
 
     ///////////////////////////////////////////

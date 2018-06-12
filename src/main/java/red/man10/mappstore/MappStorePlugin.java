@@ -39,18 +39,19 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
 
         //////////////////////////////////////
         //      Register your mApp
-        ClockMappApp.register();
-        HelloMappApp.register();
+        ClockApp.register();
+        HelloApp.register();
         YourMappApp.register();
-        DrawMappApp.register();
-        BallMappApp.register();
-        MazeMappApp.register();
-        WeatherMappApp.register();
-        BalanceMappApp.register();
+        DrawApp.register();
+        BallApp.register();
+        MazeApp.register();
+        WeatherApp.register();
+        BalanceApp.register();
         AnalogClockApp.register();
-        PianoMappApp.register();
+        PianoApp.register();
         BreakoutApp.register();
         CalcApp.register();
+        ServerStatApp.register();
 
 
 

@@ -13,7 +13,7 @@ import java.awt.*;
 
 
 
-public class HelloMappApp extends MappApp {
+public class HelloApp extends MappApp {
 
     ////////////////////////////////
     //     Data
