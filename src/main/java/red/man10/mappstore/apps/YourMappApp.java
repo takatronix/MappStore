@@ -1,8 +1,10 @@
 package red.man10.mappstore.apps;
 
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import red.man10.mappstore.MappRenderer;
 import red.man10.mappstore.MappApp;
 import java.awt.*;
@@ -195,6 +197,31 @@ public class YourMappApp extends MappApp {
         //  Yaw&Velocity  /　左右向き&速度
         MappRenderer.playerYawEvent(appName,(String key,int mapId,Player player,double angle,double velocity) ->{
 
+            return true; //    true -> call drawing logic :描画更新
+        });
+
+
+
+        ////////////////////////////////////
+        //      Chat
+        MappRenderer.playerChatEvent(appName,(String key,int mapId,Player player,AsyncPlayerChatEvent chatEvent) ->{
+
+
+            Bukkit.getLogger().info("chat:"+player.getName()+":"+chatEvent.getMessage());
+
+/*
+            Graphics2D g = MappRenderer.getGraphics(mapId);
+            if(g == null){
+                return false;
+            }
+
+            //  clear screen  　
+            g.setColor(Color.BLACK);
+            g.fillRect(0,0,128,128);
+            g.setColor(Color.YELLOW);
+            g.setFont(new Font( "SansSerif", Font.BOLD ,10));
+            g.drawString(chatEvent.getMessage(),0,10);
+*/
             return true; //    true -> call drawing logic :描画更新
         });
 

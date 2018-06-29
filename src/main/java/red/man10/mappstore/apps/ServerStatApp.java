@@ -30,11 +30,12 @@ public class ServerStatApp extends MappApp {
     ////////////////////////////////////////////
     //     Draw refresh Cycle:描画割り込み周期
     //     appTickCycle = 1 -> 1/20 sec
-    static int  drawRefreshCycle = 20;
+    static int  drawRefreshCycle = 1;
 
 
     static ArrayList<Double> tpsList = new ArrayList<>();
-    static ArrayList<Integer> loginCountList = new ArrayList<>();
+    static ArrayList<Integer> onlineList = new ArrayList<>();
+    static int onlineMax = 0;
 
 
     ///////////////////////////////////////////////////////
@@ -57,15 +58,36 @@ public class ServerStatApp extends MappApp {
         MappRenderer.draw( appName, drawRefreshCycle, (String key, int mapId,Graphics2D g) -> {
 
              // Clear screen (画面消去)
-              g.setColor(Color.BLACK);
-              g.fillRect(0,0,128,128);
+            g.setColor(Color.BLACK);
+            g.fillRect(0,0,128,128);
 
             g.setColor(Color.YELLOW);
             g.setFont(new Font( "SansSerif", Font.BOLD ,10));
 
 
-            Double tps = MinecraftServer.getServer().recentTps[0];
 
+
+            //      Create tps list
+            Double tps = MinecraftServer.getServer().recentTps[0];
+            tpsList.add(tps);
+
+            if(tpsList.size() > 128){
+                tpsList.remove(0);
+            }
+
+
+            onlineList.add(Bukkit.getOnlinePlayers().size());
+            if(onlineList.size() > 128){
+                onlineList.remove(0);
+            }
+
+            if(onlineMax < onlineList.size()){
+                onlineMax = onlineList.size();
+            }
+
+
+
+            g.drawString( String.format("TPS:%.1f",tps),10,10);
             return true;  //  true -> update map / trueでマップに画像が転送されます
         });
 
@@ -79,18 +101,6 @@ public class ServerStatApp extends MappApp {
         //  Button (nearby map) clicked event / ボタンが押された時の処理
         MappRenderer.buttonEvent(appName, (String key, int mapId,Player player) -> {
 
-            //////////////////////////////////////////////
-            //  Get Graphics context for drawing
-            //  描画用コンテキスト取得
-            Graphics2D g = MappRenderer.getGraphics(mapId);
-            if(g == null){
-                return false;
-            }
-
-            //  clear screen  　
-            g.setColor(Color.BLACK);
-            g.fillRect(0,0,128,128);
-
             //    true -> call drawing logic / trueで描画ロジックがコールされます
             return true;
         });
@@ -100,16 +110,6 @@ public class ServerStatApp extends MappApp {
         //      ディスプレイがタッチされた時の処理
         MappRenderer.displayTouchEvent(appName, (String key, int mapId, Player player, int x, int y) -> {
 
-            //////////////////////////////////////////////
-            //  Get Graphics context for drawing
-            //  描画用コンテキスト取得
-            Graphics2D gr = MappRenderer.getGraphics(mapId);
-            if(gr == null){
-                return false;
-            }
-
-            gr.setColor(Color.RED);
-            gr.drawLine(x,y,x,y);
 
             //    true -> call drawing logic :描画更新
             return true;

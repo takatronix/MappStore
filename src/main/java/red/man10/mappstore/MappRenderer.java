@@ -113,6 +113,10 @@ public class MappRenderer extends MapRenderer implements Listener {
     public interface PlayerPitchFunction{
         boolean onPlayerPitchChanged(String key,int mapId,Player player,double angle,double velocity);
     }
+    @FunctionalInterface
+    public interface PlayerChatFunction{
+        boolean onPlayerChat(String key,int mapId,Player player,AsyncPlayerChatEvent event);
+    }
 
 
     //     画面タッチ
@@ -142,11 +146,6 @@ public class MappRenderer extends MapRenderer implements Listener {
         }
 
         int mapID = (int)item.getDurability();
-
-
-
-
-
 
         Boolean isSneaking = player.isSneaking();
 
@@ -218,6 +217,34 @@ public class MappRenderer extends MapRenderer implements Listener {
 
     }
 
+    @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+
+
+        //      プレイヤーがマップを持っていなければ抜け　
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if(item.getType() != Material.MAP) {
+            return;
+        }
+
+        int mapID = (int)item.getDurability();
+
+        String key = findKey(mapID);
+        if(key == null){
+            return;
+        }
+
+        PlayerChatFunction func =  chatFunctions.get(key);
+        if(func != null){
+            if(func.onPlayerChat(key,mapID,player,event)){
+                refresh(key);
+            }
+        }
+    }
+
+
+
     ///////////////////////////////////////////////
     //      "key" ->　関数　をハッシュマップに保存
     static HashMap<String,DrawFunction> drawFunctions = new HashMap<>();
@@ -228,8 +255,6 @@ public class MappRenderer extends MapRenderer implements Listener {
     static HashMap<String,InitFunction> initfunctions = new HashMap<>();
     public static void init(String key,InitFunction func){
         initfunctions.put(key,func);
-
-
     }
 
 
@@ -277,9 +302,16 @@ public class MappRenderer extends MapRenderer implements Listener {
     public static void playerPitchEvent(String key,PlayerPitchFunction func){
         pitchFunctions.put(key,func);
     }
+
     static HashMap<String,PlayerYawFunction> yawFunctions = new HashMap<>();
     public static void playerYawEvent(String key,PlayerYawFunction func){
         yawFunctions.put(key,func);
+    }
+
+    //    chatイベントを追加
+    static HashMap<String,PlayerChatFunction> chatFunctions = new HashMap<>();
+    public static void playerChatEvent(String key,PlayerChatFunction func){
+        chatFunctions.put(key,func);
     }
 
 
@@ -381,6 +413,9 @@ public class MappRenderer extends MapRenderer implements Listener {
 
         renderCount++;
     }
+
+
+
 
     static public boolean onPlayerInteractEntityEvent(PlayerInteractEntityEvent e){
 
