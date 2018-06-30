@@ -115,7 +115,7 @@ public class MappRenderer extends MapRenderer implements Listener {
     }
     @FunctionalInterface
     public interface PlayerChatFunction{
-        boolean onPlayerChat(String key,int mapId,Player player,AsyncPlayerChatEvent event);
+        boolean onPlayerChat(String key,Player player,AsyncPlayerChatEvent event);
     }
 
 
@@ -223,6 +223,8 @@ public class MappRenderer extends MapRenderer implements Listener {
 
         //      プレイヤーがマップを持っていなければ抜け　
         Player player = event.getPlayer();
+
+        /*
         ItemStack item = player.getInventory().getItemInMainHand();
         if(item.getType() != Material.MAP) {
             return;
@@ -234,10 +236,10 @@ public class MappRenderer extends MapRenderer implements Listener {
         if(key == null){
             return;
         }
-
+*/
         PlayerChatFunction func =  chatFunctions.get(key);
         if(func != null){
-            if(func.onPlayerChat(key,mapID,player,event)){
+            if(func.onPlayerChat(key,player,event)){
                 refresh(key);
             }
         }

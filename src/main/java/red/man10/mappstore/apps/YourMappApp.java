@@ -204,7 +204,7 @@ public class YourMappApp extends MappApp {
 
         ////////////////////////////////////
         //      Chat
-        MappRenderer.playerChatEvent(appName,(String key,int mapId,Player player,AsyncPlayerChatEvent chatEvent) ->{
+        MappRenderer.playerChatEvent(appName,(String key,Player player,AsyncPlayerChatEvent chatEvent) ->{
 
 
             Bukkit.getLogger().info("chat:"+player.getName()+":"+chatEvent.getMessage());
