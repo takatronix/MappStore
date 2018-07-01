@@ -237,12 +237,21 @@ public class MappRenderer extends MapRenderer implements Listener {
             return;
         }
 */
-        PlayerChatFunction func =  chatFunctions.get(key);
-        if(func != null){
-            if(func.onPlayerChat(key,player,event)){
-                refresh(key);
+
+        List<String> keylist = new ArrayList<>(chatFunctions.keySet());
+
+        for(String key : keylist){
+
+            PlayerChatFunction func =  chatFunctions.get(key);
+            if(func != null){
+                Bukkit.getLogger().info("event chat");
+                if(func.onPlayerChat(key,player,event)){
+                    refresh(key);
+                }
             }
         }
+
+
     }
 
 
