@@ -204,10 +204,11 @@ public class YourMappApp extends MappApp {
 
         ////////////////////////////////////
         //      Chat
-        MappRenderer.playerChatEvent(appName,(String key,Player player,AsyncPlayerChatEvent chatEvent) ->{
+        MappRenderer.playerChatEvent(appName,(String key,int mapId,AsyncPlayerChatEvent chatEvent) ->{
 
+            Player p = chatEvent.getPlayer();
 
-            Bukkit.getLogger().info("chat:"+player.getName()+":"+chatEvent.getMessage());
+            Bukkit.getLogger().info(key+"chat:"+mapId+":"+chatEvent.getMessage());
 
 /*
             Graphics2D g = MappRenderer.getGraphics(mapId);

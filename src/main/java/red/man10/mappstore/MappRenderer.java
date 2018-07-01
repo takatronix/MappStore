@@ -115,7 +115,7 @@ public class MappRenderer extends MapRenderer implements Listener {
     }
     @FunctionalInterface
     public interface PlayerChatFunction{
-        boolean onPlayerChat(String key,Player player,AsyncPlayerChatEvent event);
+        boolean onPlayerChat(String key,int mapId,AsyncPlayerChatEvent event);
     }
 
 
@@ -222,7 +222,7 @@ public class MappRenderer extends MapRenderer implements Listener {
 
 
         //      プレイヤーがマップを持っていなければ抜け　
-        Player player = event.getPlayer();
+    //    Player player = event.getPlayer();
 
         /*
         ItemStack item = player.getInventory().getItemInMainHand();
@@ -238,17 +238,19 @@ public class MappRenderer extends MapRenderer implements Listener {
         }
 */
 
-        List<String> keylist = new ArrayList<>(chatFunctions.keySet());
 
-        for(String key : keylist){
 
-            PlayerChatFunction func =  chatFunctions.get(key);
+
+        for(MappRenderer r:renderers) {
+
+            PlayerChatFunction func =  chatFunctions.get(r.key);
             if(func != null){
                 Bukkit.getLogger().info("event chat");
-                if(func.onPlayerChat(key,player,event)){
+                if(func.onPlayerChat(r.key,r.mapId,event)){
                     refresh(key);
                 }
             }
+
         }
 
 
