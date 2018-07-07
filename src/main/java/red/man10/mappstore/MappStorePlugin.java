@@ -52,6 +52,7 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
         BreakoutApp.register();
         CalcApp.register();
         ServerStatApp.register();
+        TypingApp.register();
 
 
 
@@ -96,6 +97,9 @@ public final class MappStorePlugin extends JavaPlugin  implements Listener {
             saveResource("images/breakout/breakout_background.png",false);
             saveResource("images/breakout/breakout_logo.png",false);
 
+            saveResource("images/typing/typing_background.png",false);
+
+            saveResource("TypingApp/words.txt",false);
 
         }
         catch (Exception ex) {
