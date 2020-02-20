@@ -155,13 +155,13 @@ public class BreakoutApp {
                         m.playing_player.sendMessage("§e§l[Breakout]§a§l"+(int)(m.game_time-4000)/20+"...");
                         //音 / sounds
                         World w = m.playing_player.getWorld();
-                        w.playSound(m.playing_player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 1);
+                        w.playSound(m.playing_player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
                         break;
                     case 4000:
                         m.playing_player.sendMessage("§e§l[Breakout]§a§lGAME START!");
                         //音 / sounds
                         w = m.playing_player.getWorld();
-                        w.playSound(m.playing_player.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1);
+                        w.playSound(m.playing_player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
                 }
                 //ステージ 描画
                 BreakoutApp.drawStage(mapId);
@@ -522,7 +522,7 @@ public class BreakoutApp {
         Graphics2D g = MappRenderer.getGraphics(mapId);
         //音 と エフェクト / sounds and effects
         World w = m.playing_player.getWorld();
-        w.playSound(m.playing_player.getLocation(), Sound.ENTITY_LIGHTNING_IMPACT, 1, 1);
+        w.playSound(m.playing_player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 1, 1);
         Location loc = m.playing_player.getLocation();
         ///////////////////////////////
         //Draw message / メッセージを塗る

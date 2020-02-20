@@ -1,7 +1,7 @@
 package red.man10.mappstore.apps;
 
 
-import net.minecraft.server.v1_12_R1.MinecraftServer;
+import net.minecraft.server.v1_15_R1.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;

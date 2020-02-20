@@ -1,6 +1,7 @@
 package red.man10.mappstore;
 import org.bukkit.Effect;
 import org.bukkit.World;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 
@@ -67,7 +68,7 @@ public class RayTrace {
     public Vector positionOfIntersection(BoundingBox boundingBox, double blocksAway, double accuracy) {
         ArrayList<Vector> positions = traverse(blocksAway, accuracy);
         for (Vector position : positions) {
-            if (intersects(position, boundingBox.min, boundingBox.max)) {
+            if (intersects(position, boundingBox.getMin(), boundingBox.getMax())) {
                 return position;
             }
         }
@@ -78,7 +79,7 @@ public class RayTrace {
     public boolean intersects(BoundingBox boundingBox, double blocksAway, double accuracy) {
         ArrayList<Vector> positions = traverse(blocksAway, accuracy);
         for (Vector position : positions) {
-            if (intersects(position, boundingBox.min, boundingBox.max)) {
+            if (intersects(position, boundingBox.getMin(), boundingBox.getMax())) {
                 return true;
             }
         }
@@ -100,7 +101,7 @@ public class RayTrace {
     //debug / effects
     public void highlight(World world, double blocksAway, double accuracy){
         for(Vector position : traverse(blocksAway,accuracy)){
-            world.playEffect(position.toLocation(world), Effect.COLOURED_DUST,0);
+            world.playEffect(position.toLocation(world), Effect.SMOKE,0);
         }
     }
 

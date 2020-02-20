@@ -1,6 +1,5 @@
 package red.man10.mappstore.apps;
 
-import org.bukkit.entity.Player;
 import red.man10.mappstore.MappDraw;
 import red.man10.mappstore.MappRenderer;
 import red.man10.mappstore.MappApp;

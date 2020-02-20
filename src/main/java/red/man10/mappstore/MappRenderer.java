@@ -21,6 +21,7 @@ import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.map.MinecraftFont;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -458,7 +459,7 @@ public class MappRenderer extends MapRenderer implements Listener {
             World world = e.getPlayer().getWorld();
 
             //      叩いたブロックのBB
-            BoundingBox bb = new BoundingBox(block);
+            BoundingBox bb = block.getBoundingBox();
 
 
             double rayDistance = 3;
@@ -494,8 +495,8 @@ public class MappRenderer extends MapRenderer implements Listener {
 
 
             if(debugMode){
-                world.playEffect(topLeft.toLocation(world), Effect.COLOURED_DUST,0);
-                world.playEffect(bottomRight.toLocation(world), Effect.COLOURED_DUST,0);
+                world.playEffect(topLeft.toLocation(world), Effect.SMOKE,0);
+                world.playEffect(bottomRight.toLocation(world), Effect.SMOKE,0);
             }
 
             //      視線とブロックの交差点
@@ -547,10 +548,7 @@ public class MappRenderer extends MapRenderer implements Listener {
 
         /////////////////////////////////////////////////////
         //      プレートを踏んだ
-        if(clickedBlock.getType()== Material.STONE_PLATE
-                || clickedBlock.getType()== Material.GOLD_PLATE
-                || clickedBlock.getType()== Material.IRON_PLATE
-                ){
+        if(clickedBlock.getType()== Material.STONE_PRESSURE_PLATE){
 
             // Bukkit.getLogger().info("踏んだ ");
 
@@ -603,8 +601,7 @@ public class MappRenderer extends MapRenderer implements Listener {
         }
 
 
-        if(     clickedBlock.getType()== Material.WOOD_BUTTON
-                || clickedBlock.getType()== Material.STONE_BUTTON
+        if(  clickedBlock.getType()== Material.STONE_BUTTON
                 /*
                 ||   clickedBlock.getType()== Material.STONE_PLATE
                 || clickedBlock.getType()== Material.GOLD_PLATE
@@ -803,13 +800,29 @@ public class MappRenderer extends MapRenderer implements Listener {
        renderer.mapId = mapId;
        map.addRenderer(renderer);
 
+/* map 1.13
 
+ItemStack itemStack = new ItemStack(Items.FILLED_MAP);
+
+WorldServer worldServer = ((CraftWorld) player.getWorld()).getHandle();
+int id = worldServer.b("map");
+
+WorldMap worldMap = new WorldMap("map_" + id);
+worldMap.mapView.addRenderer(yourRenderer);
+
+worldServer.a(worldMap.getId(), worldMap);
+
+itemStack.getOrCreateTag().setInt("map", id);
+
+player.getInventory().addItem(CraftItemStack.asBukkitCopy(itemStack));
+
+ */
 
 
        ItemMeta im = m.getItemMeta();
        im.addEnchant(Enchantment.DURABILITY, 1, true);
        m.setItemMeta(im);
-       m.setDurability(map.getId());
+       m.setDurability((short)map.getId());
 
        //       識別用に保存
        renderers.add(renderer);

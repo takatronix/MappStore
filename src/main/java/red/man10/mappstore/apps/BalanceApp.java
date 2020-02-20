@@ -133,7 +133,7 @@ public class BalanceApp extends MappApp {
 
     }
 
-    public static void showBalance( Graphics2D g,Player player){
+    public static void showBalance(Graphics2D g, Player player){
         g.setColor(Color.BLACK);
         g.fillRect(0,0,128,128);
 
