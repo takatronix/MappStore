@@ -75,7 +75,7 @@ public class MappRenderer extends MapRenderer implements Listener {
 
     static int getMapId(ItemStack map){
 
-       // return (int)map.getDurability();
+        // return (int)map.getDurability();
         if (map.getType().equals(Material.FILLED_MAP) && map.hasItemMeta()) {
             MapMeta meta = (MapMeta) map.getItemMeta();
             return meta.getMapView().getId();
@@ -84,12 +84,9 @@ public class MappRenderer extends MapRenderer implements Listener {
         return 0;
     }
     static void setMapId(ItemStack item,int mapId){
+        item.setDurability((short)mapId);
         MapMeta meta = (MapMeta) item.getItemMeta();
-        //  MapView mapView = new MapView()
-
-        //MapView mapView = meta.getMapView();
-        //meta.setMapView(mapView);
-       // plugin.getServer().getmap
+        meta.setMapId(mapId);
         item.setItemMeta(meta);
     }
 
@@ -272,9 +269,6 @@ public class MappRenderer extends MapRenderer implements Listener {
         }
 */
 
-
-
-
         for(MappRenderer r:renderers) {
 
             PlayerChatFunction func =  chatFunctions.get(r.key);
@@ -284,10 +278,7 @@ public class MappRenderer extends MapRenderer implements Listener {
                     refresh(key);
                 }
             }
-
         }
-
-
     }
 
 
@@ -415,8 +406,6 @@ public class MappRenderer extends MapRenderer implements Listener {
     //      描画更新があれば反映
     public void onTick(){
 
-
-
         if (refreshOnce){
             refreshOnce = false;
             draw();
@@ -458,10 +447,6 @@ public class MappRenderer extends MapRenderer implements Listener {
             }
             updateCount++;
         }
-
-
-
-
         renderCount++;
     }
 
@@ -813,16 +798,9 @@ public class MappRenderer extends MapRenderer implements Listener {
 
         ItemStack m = new ItemStack(Material.FILLED_MAP);
         MapView mapView = Bukkit.createMap(Bukkit.getWorlds().get(0));
-
-
-         //MapView mapView = Bukkit.getMap(999);
-
-        //      mapID,keyのフォーマットで必要データを保存;
        int mapId = mapView.getId();
 
-       MapMeta meta = (MapMeta) m.getItemMeta();
-       meta.setMapId(mapId);
-       m.setItemMeta(meta);
+       setMapId(m,mapId);
 
        log("map"+mapId+" ");
         mlist.add(mapId + "," + key);
@@ -835,39 +813,13 @@ public class MappRenderer extends MapRenderer implements Listener {
     //        mapView.removeRenderer(mr);
     //    }
        mapView.getRenderers().clear();
-       for (MapRenderer mr : mapView.getRenderers()) {
-           mapView.removeRenderer(mr);
-       }
+
        MappRenderer renderer = new MappRenderer();
        renderer.key = key;
        renderer.refreshOnce = true;
        renderer.updateMapOnce = true;
        renderer.mapId = mapId;
        mapView.addRenderer(renderer);
-
-/* map 1.13
-
-ItemStack itemStack = new ItemStack(Items.FILLED_MAP);
-
-WorldServer worldServer = ((CraftWorld) player.getWorld()).getHandle();
-int id = worldServer.b("map");
-
-WorldMap worldMap = new WorldMap("map_" + id);
-worldMap.mapView.addRenderer(yourRenderer);
-
-worldServer.a(worldMap.getId(), worldMap);
-
-itemStack.getOrCreateTag().setInt("map", id);
-
-player.getInventory().addItem(CraftItemStack.asBukkitCopy(itemStack));
-
- */
-
-
-       //ItemMeta im = m.getItemMeta();
-     //  im.addEnchant(Enchantment.DURABILITY,1, true);
-    //   m.setDurability((short)mapId);
-     //  m.setItemMeta(im);
 
        //       識別用に保存
        renderers.add(renderer);
