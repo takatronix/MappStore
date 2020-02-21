@@ -5,7 +5,7 @@ prefix: MappStore
 authors: [takatronix]
 description: Minecraft Map App Store
 website: http://man10.red
-api-version: "1.15"
+api-version: "1.13"
 softdepend: [Man10CommonLibs]
 commands:
    mapp:

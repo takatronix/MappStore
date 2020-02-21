@@ -1,11 +1,14 @@
 package red.man10.mappstore;
 
+import net.minecraft.server.v1_15_R1.WorldMap;
+import net.minecraft.server.v1_15_R1.WorldServer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
@@ -14,8 +17,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
+import org.bukkit.event.server.MapInitializeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -61,12 +66,37 @@ public class MappRenderer extends MapRenderer implements Listener {
     //      Singleton
     private static MappRenderer sharedInstance = new MappRenderer();
     private MappRenderer() {
-        Bukkit.getLogger().info("MappRenderer created..");
+        log("MappRenderer created..");
     }
     public static MappRenderer getInstance() {
         return sharedInstance;
     }
     public static VaultManager vaultManager;
+
+    static int getMapId(ItemStack map){
+
+       // return (int)map.getDurability();
+        if (map.getType().equals(Material.FILLED_MAP) && map.hasItemMeta()) {
+            MapMeta meta = (MapMeta) map.getItemMeta();
+            return meta.getMapView().getId();
+        }
+
+        return 0;
+    }
+    static void setMapId(ItemStack item,int mapId){
+        MapMeta meta = (MapMeta) item.getItemMeta();
+        //  MapView mapView = new MapView()
+
+        //MapView mapView = meta.getMapView();
+        //meta.setMapView(mapView);
+       // plugin.getServer().getmap
+        item.setItemMeta(meta);
+    }
+
+    static void log(String text){
+        if(debugMode)
+            Bukkit.getLogger().info(text);
+    }
 
 
     ///////////////////////////////////////////////
@@ -136,17 +166,20 @@ public class MappRenderer extends MapRenderer implements Listener {
         //      イベントを通知してやる（ボタン検出用)
         MappRenderer.onPlayerInteractEvent(e);
     }
+
+
     @EventHandler
     public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
 
         //      プレイヤーがマップを持っていなければ抜け　
         Player player = e.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
-        if(item.getType() != Material.MAP) {
+        if(item.getType() != Material.FILLED_MAP) {
             return;
         }
 
-        int mapID = (int)item.getDurability();
+        int mapID = getMapId(item);
+
 
         Boolean isSneaking = player.isSneaking();
 
@@ -181,11 +214,11 @@ public class MappRenderer extends MapRenderer implements Listener {
         //      プレイヤーがマップを持っていなければ抜け　
         Player player = e.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
-        if(item.getType() != Material.MAP) {
+        if(item.getType() != Material.FILLED_MAP) {
             return;
         }
 
-        int mapID = (int)item.getDurability();
+        int mapID = getMapId(item);
 
 
         Vector lastMovingVec = userMovingVec.get(player);
@@ -227,7 +260,7 @@ public class MappRenderer extends MapRenderer implements Listener {
 
         /*
         ItemStack item = player.getInventory().getItemInMainHand();
-        if(item.getType() != Material.MAP) {
+        if(item.getType() != Material.FILLED_MAP) {
             return;
         }
 
@@ -401,7 +434,10 @@ public class MappRenderer extends MapRenderer implements Listener {
         }
 
     }
-
+    @EventHandler
+    public void onMapInitialize(MapInitializeEvent e) {
+        log("onMapInitialize");
+    }
     //////////////////////////////////////////////////////////////////////
     //    このイベントは本人がマップを持った場合1tick
     //    他者がみる場合は1secの周期でよばれるため高速描写する必要がある
@@ -409,6 +445,7 @@ public class MappRenderer extends MapRenderer implements Listener {
     @Override
     public void render(MapView map, MapCanvas canvas, Player player) {
 
+     //  log("render");
         //     オフスクリーンバッファからコピー
         if(updateMapOnce){
             canvas.drawImage(0,0,bufferedImage);
@@ -438,12 +475,11 @@ public class MappRenderer extends MapRenderer implements Listener {
             //  クリックしたアイテムフレームのアイテムがマップでなければ抜け
             ItemFrame frame = (ItemFrame) ent;
             ItemStack item = frame.getItem();
-            if(item.getType() != Material.MAP) {
+            if(item.getType() != Material.FILLED_MAP) {
                 return false;
             }
 
-            //      DurabilityにいれてあるのがマップID
-            int mapId = (int)item.getDurability();
+            int mapId = getMapId(item);
             String key = findKey(mapId);
             if(key == null){
                 return false;
@@ -565,12 +601,12 @@ public class MappRenderer extends MapRenderer implements Listener {
                 //     アイテムフレームにあるのはマップか？
                 ItemFrame frame = (ItemFrame) en;
                 ItemStack item = frame.getItem();
-                if(item.getType() != Material.MAP) {
+                if(item.getType() != Material.FILLED_MAP) {
                     continue;
                 }
 
                 //      DurabilityにいれてあるのがマップID
-                int mapId = (int)item.getDurability();
+                int mapId = getMapId(item);
                 String key = findKey(mapId);
                 if(key == null){
                     continue;
@@ -622,12 +658,11 @@ public class MappRenderer extends MapRenderer implements Listener {
                 //     アイテムフレームにあるのはマップか？
                 ItemFrame frame = (ItemFrame) en;
                 ItemStack item = frame.getItem();
-                if(item.getType() != Material.MAP) {
+                if(item.getType() != Material.FILLED_MAP) {
                     continue;
                 }
 
-                //      DurabilityにいれてあるのがマップID
-                int mapId = (int)item.getDurability();
+                int mapId = getMapId(item);
                 String key = findKey(mapId);
                 if(key == null){
                     continue;
@@ -768,8 +803,6 @@ public class MappRenderer extends MapRenderer implements Listener {
 
 
        if(drawFunctions.get(key) == null){
-
-
            return null;
        }
 
@@ -778,27 +811,39 @@ public class MappRenderer extends MapRenderer implements Listener {
 
         List<String> mlist = config.getStringList("Maps");
 
-        ItemStack m = new ItemStack(Material.MAP);
-        MapView map = Bukkit.createMap(Bukkit.getWorlds().get(0));
+        ItemStack m = new ItemStack(Material.FILLED_MAP);
+        MapView mapView = Bukkit.createMap(Bukkit.getWorlds().get(0));
+
+
+         //MapView mapView = Bukkit.getMap(999);
 
         //      mapID,keyのフォーマットで必要データを保存;
-       int mapId = (int) map.getId();
+       int mapId = mapView.getId();
+
+       MapMeta meta = (MapMeta) m.getItemMeta();
+       meta.setMapId(mapId);
+       m.setItemMeta(meta);
+
+       log("map"+mapId+" ");
         mlist.add(mapId + "," + key);
 
         //      設定データ保存
         config.set("Maps", mlist);
         plugin.saveConfig();
 
-        for (MapRenderer mr : map.getRenderers()) {
-            map.removeRenderer(mr);
-        }
-
+   //     for (MapRenderer mr : mapView.getRenderers()) {
+    //        mapView.removeRenderer(mr);
+    //    }
+       mapView.getRenderers().clear();
+       for (MapRenderer mr : mapView.getRenderers()) {
+           mapView.removeRenderer(mr);
+       }
        MappRenderer renderer = new MappRenderer();
        renderer.key = key;
        renderer.refreshOnce = true;
        renderer.updateMapOnce = true;
        renderer.mapId = mapId;
-       map.addRenderer(renderer);
+       mapView.addRenderer(renderer);
 
 /* map 1.13
 
@@ -819,10 +864,10 @@ player.getInventory().addItem(CraftItemStack.asBukkitCopy(itemStack));
  */
 
 
-       ItemMeta im = m.getItemMeta();
-       im.addEnchant(Enchantment.DURABILITY, 1, true);
-       m.setItemMeta(im);
-       m.setDurability((short)map.getId());
+       //ItemMeta im = m.getItemMeta();
+     //  im.addEnchant(Enchantment.DURABILITY,1, true);
+    //   m.setDurability((short)mapId);
+     //  m.setItemMeta(im);
 
        //       識別用に保存
        renderers.add(renderer);
@@ -910,10 +955,10 @@ player.getInventory().addItem(CraftItemStack.asBukkitCopy(itemStack));
         //      向きの違いから検出しマウスのベロシティを求める
         for(Player p:Bukkit.getOnlinePlayers()){
             ItemStack item = p.getInventory().getItemInMainHand();
-            if(item.getType() != Material.MAP){
+            if(item.getType() != Material.FILLED_MAP){
                 continue;
             }
-            int mapID = item.getDurability();
+            int mapID = getMapId(item);
             String key = findKey(mapID);
             if(key == null){
                 continue;
