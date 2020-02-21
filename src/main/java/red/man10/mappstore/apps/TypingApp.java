@@ -411,7 +411,7 @@ public class TypingApp extends MappApp implements Listener{
         }
         if (data.awayTime == 70){
             player.sendMessage(chatMessage+"§2ゲームスタート！");
-            w.playSound(player.getLocation(),Sound.ENTITY_FIREWORK_SHOOT,8,2);
+            w.playSound(player.getLocation(),Sound.ENTITY_FIREWORK_ROCKET_SHOOT,8,2);
         }
 
         if (data.awayTime<=20){

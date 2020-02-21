@@ -1,22 +1,20 @@
 package red.man10.mappstore;
 
-import net.minecraft.server.v1_12_R1.BlockPosition;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapView;
+import org.bukkit.map.MinecraftFont;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.io.BukkitObjectInputStream;
 import red.man10.mappstore.apps.*;
 
 import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 public final class MappStorePlugin extends JavaPlugin  implements Listener {
+
 
 
 

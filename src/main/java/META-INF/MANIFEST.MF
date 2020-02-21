@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
-Main-Class: red.man10.mappstore.MappStore
+Main-Class: red.man10.mappstore.MappStorePlugin
+Class-Path: MappStore1.15.2.jar
 
